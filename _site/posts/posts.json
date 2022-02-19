@@ -1,0 +1,19 @@
+[
+  {
+    "path": "posts/welcome/",
+    "title": "Welcome to Ketchbrook Analytics Blog",
+    "description": "Welcome to our new blog, Ketchbrook Analytics Blog. We hope you enjoy \nreading what we have to say!",
+    "author": [
+      {
+        "name": "Nora Jones",
+        "url": "https://example.com/norajones"
+      }
+    ],
+    "date": "2022-02-19",
+    "categories": [],
+    "contents": "\r\nHere’s the body of this blog post…\r\n\r\n\r\n\r\n",
+    "preview": {},
+    "last_modified": "2022-02-19T14:20:42-05:00",
+    "input_file": "welcome.knit.md"
+  }
+]
