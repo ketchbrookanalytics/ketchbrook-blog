@@ -22,6 +22,9 @@ unique_loans_df <-
       replace = TRUE, 
       prob = c(0.7, 0.3)
     )
+  ) |> 
+  dplyr::mutate(
+    Outcome = ifelse(`Loan ID` == 1002, "Default", Outcome)
   )
 
 longitudinal_df <- 

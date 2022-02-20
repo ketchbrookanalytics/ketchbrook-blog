@@ -1,12 +1,13 @@
 name: "ketchbrook-blog"
 title: "Ketchbrook Analytics Blog"
 description: |
-  Ketchbrook Analytics Blog
+  Everything you need to know about the latest & greatest in Data Science
+base_url: https://blog.ketchbrookanalytics.com
 output_dir: "_site"
 navbar:
   right:
-    - text: "Home"
+    - text: "Blog"
       href: index.html
-    - text: "About"
-      href: about.html
+    - icon: fa fa-chart-bar
+      href: https://www.ketchbrookanalytics.com
 output: distill::distill_article
