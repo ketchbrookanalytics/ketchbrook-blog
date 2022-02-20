@@ -1,0 +1,82 @@
+---
+title: "Making Small Data Big(ger)"
+description: |
+  Don't limit your data by your choice of model.
+author: Michael Thomas
+date: 2022-02-19
+output:
+  distill::distill_article:
+    self_contained: false
+draft: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+set.seed(243)
+
+library(tibble)
+library(dplyr)
+library(kableExtra)
+
+source("preprocess.R")
+```
+
+One of the caveats of working with your traditional vanilla machine learning algorithms (e.g., linear regression, logistic regression, decision trees, etc.) is that each case (row) in your training data set *must be independent*. Let's explore what exactly this means.
+
+The way those algorithms learn is by looking at a bunch of cases: the circumstances surrounding each case, and what the outcome was for each case. The algorithm then tries to boil all of these cases down to a handful of rules that do a pretty good job at explaining how certain circumstances generally lead to particular outcomes. 
+
+### Applications in Credit Risk
+
+When we think about credit risk models, the *cases* are perhaps a bunch of historical loans in your portfolio where we know what the outcome was. To provide a simplified example, let's suppose we are building a [logistic regression](https://en.wikipedia.org/wiki/Logistic_regression) model where the possible outcomes are **(1)** the loan was paid back in full or, **(2)** the borrower defaulted on the loan.
+
+```{r}
+unique_loans_df |> 
+  dplyr::mutate(
+    Outcome = kableExtra::cell_spec(
+      Outcome, color = ifelse(Outcome == "Default", "red", "darkgreen")
+    )
+  ) |> 
+  kableExtra::kbl(align = 'c', escape = FALSE) |> 
+  kableExtra::kable_styling() |> 
+  kableExtra::column_spec(1, width = "0.75in") |> 
+  kableExtra::column_spec(2, width = "1.75in") |> 
+  kableExtra::column_spec(3:5, width = "1.5in") |> 
+  kableExtra::column_spec(5, bold = TRUE)
+```
+
+In order to create the above dataset to train our model, we had to aggregate each loan into a single observation, so that each row represents a unique loan. Remember, each case in our training data must be independent; for us this means that we cannot have any loan appear more than once. There are many approaches to doing this aggregation which we won't cover today, but for now just remember that the approach taken should be driven by what information will be available at the time of *scoring* a new loan.
+
+### Aggregation is Limiting
+
+When we take the step of aggregating our data into unique loan-level observations, we are naturally reducing the amount of data we have to work with. If you have tons of data, this isn't an issue. But one issue we run into often is severe *class imbalance* in our outcome. In other words, we tend to have a lot more <span style="color: darkgreen;">"Paid in Full"</span> cases than we have <span style="color: red;">"Default"</span> cases.
+
+> "Remember, each case in our training data must be independent; for us this means that we cannot have any loan appear more than once."
+
+But what if we didn't have to satisfy that independence assumption? What if we didn't have to aggregate our data? After all, the original data in our database probably looks a lot more like this:
+
+```{r}
+longitudinal_df |> 
+  dplyr::mutate(
+    Status = kableExtra::cell_spec(
+      Status, color = ifelse(Status == "Default", "red", ifelse(Status == "Paid in Full", "darkgreen", "gray"))
+    )
+  ) |> 
+  kableExtra::kbl(align = 'c', escape = FALSE) |> 
+  kableExtra::kable_styling() |> 
+  kableExtra::column_spec(6, bold = TRUE)
+```
+
+This type of data is sometimes referred to as *"longitudinal"* data, and represents observations of the same subject(s) over multiple points in time. In our case, the *"subjects"* are the unique loans.
+
+### What's to be Gained
+
+* more data
+* less class imbalance
+* more insight into loan history (e.g., want to distinguish between a loan that defaulted after being on the books for 3 years vs 3 months)
+
+
+
+
+
+
