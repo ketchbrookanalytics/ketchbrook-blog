@@ -6,6 +6,11 @@
     <atom:link href="https://blog.ketchbrookanalytics.com/index.xml" rel="self" type="application/rss+xml"/>
     <description>Everything you need to know about the latest &amp; greatest in Data Science
 </description>
+    <image>
+      <title>Ketchbrook Analytics Blog</title>
+      <url>https://blog.ketchbrookanalytics.com/images/favicon.ico</url>
+      <link>https://blog.ketchbrookanalytics.com</link>
+    </image>
     <generator>Distill</generator>
     <lastBuildDate>Sat, 19 Feb 2022 00:00:00 +0000</lastBuildDate>
     <item>
