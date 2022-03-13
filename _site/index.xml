@@ -12,7 +12,15 @@
       <link>https://blog.ketchbrookanalytics.com</link>
     </image>
     <generator>Distill</generator>
-    <lastBuildDate>Sat, 19 Feb 2022 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 13 Mar 2022 00:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Towards Building a Dynamic Credit Risk Framework</title>
+      <dc:creator>Michael Thomas</dc:creator>
+      <link>https://blog.ketchbrookanalytics.com/posts/2022-03-13-towards-building-a-dynamic-credit-risk-framework</link>
+      <description>Models and systems, systems and models</description>
+      <guid>https://blog.ketchbrookanalytics.com/posts/2022-03-13-towards-building-a-dynamic-credit-risk-framework</guid>
+      <pubDate>Sun, 13 Mar 2022 00:00:00 +0000</pubDate>
+    </item>
     <item>
       <title>Making Small Data Big(ger)</title>
       <dc:creator>Michael Thomas</dc:creator>

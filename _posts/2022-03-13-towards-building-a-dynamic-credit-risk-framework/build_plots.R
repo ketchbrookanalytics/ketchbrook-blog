@@ -29,7 +29,10 @@ new_loan_plot <- df |>
     )
   )
 
-htmlwidgets::saveWidget(widget = new_loan_plot, file = "new_loan_plot.html")
+# htmlwidgets::saveWidget(
+#   widget = new_loan_plot, 
+#   file = "new_loan_plot.html"
+# )
 
 
 # Build chart showing PD curve for same loan, 2 years later
@@ -61,7 +64,7 @@ existing_loan_plot <- df |>
     )
   )
 
-htmlwidgets::saveWidget(
-  widget = existing_loan_plot, 
-  file = "existing_loan_plot.html"
-)
+# htmlwidgets::saveWidget(
+#   widget = existing_loan_plot, 
+#   file = "existing_loan_plot.html"
+# )
