@@ -9,7 +9,7 @@ date: 2022-03-13
 output:
   distill::distill_article:
     self_contained: false
-draft: false
+draft: true
 ---
 
 ```{r setup, include=FALSE}
