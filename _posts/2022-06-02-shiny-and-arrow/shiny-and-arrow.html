@@ -1482,28 +1482,29 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 
 <div class="d-article">
-<p>Shiny apps are an incredible tool for bringing data science to life.
+<p>Shiny apps are incredible tools for bringing data science to life.
 They can help communicate your analysis to non-technical stakeholders,
 or enable self-service data exploration for any audience. At <a
 href="https://www.ketchbrookanalytics.com">Ketchbrook Analytics</a>, we
 care a lot about building <em>production-grade</em> quality Shiny apps;
-in other words, we strive to ensure sure that the app we develop for you
-will run successfully inside your organization with minimal
+in other words, we strive to ensure sure that the apps we develop for
+you will run successfully inside your organization with minimal
 maintenance.</p>
 <p>Building a working Shiny app that runs on your own laptop can be a
 tricky process itself! However, there are some additional things you
 need to consider when taking the next step of <em>deploying</em> your
 app to <strong>production</strong> so that others can reap the benefits
-of your hard work. One of these considerations is the <em>data</em>.</p>
+of your hard work. One of these considerations is where to
+<em>store</em> the data.</p>
 <blockquote>
 <p>“Where should the data live? Should we use a database or flat
 file(s)? Is our data small enough to fit there?”</p>
 </blockquote>
 <figure>
 <img src="data_soup.png"
-alt="Databases and File Storage Formats Swimming Together in a Data Lake" />
+alt="Databases and File Storage Formats Swimming Together in Data Soup" />
 <figcaption aria-hidden="true">Databases and File Storage Formats
-Swimming Together in a Data Lake</figcaption>
+Swimming Together in Data Soup</figcaption>
 </figure>
 <h2 id="storing-your-data">Storing Your Data</h2>
 <p>There are <em>so</em> many options to choose from when it comes to
@@ -1519,9 +1520,7 @@ However, as your data becomes <em>“big”</em>, transitioning your data to
 more modern, column-oriented file types (e.g.,
 <strong>.parquet</strong>) can drastically reduce the size of the file
 containing your data and increase the speed at which other applications
-can read that data. This is where the <a
-href="https://github.com/apache/arrow/tree/master/r#arrow">{arrow}</a>
-package can help.</p>
+can read that data.</p>
 <h3 id="the-benefits-of-.parquet">The Benefits of .parquet</h3>
 <p>First, let’s dig a little deeper into the advantages of
 <strong>.parquet</strong> over <strong>.csv</strong>. The main benefits
@@ -1533,7 +1532,7 @@ are:</p>
 <p>The compression and columnar storage format lead to file sizes that
 are significantly smaller than if that same data were stored in a
 typical delimited file. From our experience – and also backed by <a
-href="https://www.r-bloggers.com/2022/05/comparing-performances-of-csv-to-rds-parquet-and-feather-file-form">this
+href="https://tomaztsql.wordpress.com/2022/05/08/comparing-performances-of-csv-to-rds-parquet-and-feather-data-types/">this
 great blog post</a> – <strong>.parquet</strong> typically comes in at a
 little less than half the size of a data-equivalent
 <strong>.csv</strong>; however, this margin widens even further as the
@@ -1556,10 +1555,12 @@ production workflows at major organizations are driven by
 storage format, which means you can work with <strong>.parquet</strong>
 files from <a
 href="https://github.com/apache/arrow#powering-in-memory-analytics">just
-about any programming language</a> you like.</p>
+about any programming language</a> you like, including R. This is where
+the <a
+href="https://github.com/apache/arrow/tree/master/r#arrow">{arrow}</a>
+package can help.</p>
 <h3 id="the-benefits-of-arrow">The Benefits of {arrow}</h3>
-<p>The <strong>{arrow}</strong> package provides a few major
-benefits:</p>
+<p>The <strong>{arrow}</strong> package provides major benefits:</p>
 <ol type="1">
 <li>It has the ability to read &amp; write <strong>.parquet</strong>
 files (among other file types)</li>
@@ -1570,10 +1571,10 @@ for dramatic speed improvements</li>
 <p>The combination of <strong>{arrow}</strong> and
 <strong>{dplyr}</strong> also results in <em>lazy evaluation</em> of
 your data manipulation statements. This means that your {dplyr}
-functions are only building up a “recipe” of transformation steps that
-will only evaluate once you are finally ready to bring the transformed
-data into memory (through the use of <code>dplyr::collect()</code>).
-Don’t take our word for it, though; hear it <a
+functions build a “recipe” of transformation steps that will only
+evaluate once you are finally ready to bring the transformed data into
+memory (through the use of <code>dplyr::collect()</code>). Don’t take
+our word for it, though; hear it <a
 href="https://arrow.apache.org/docs/r/articles/dataset.html">straight
 from the Apache Arrow team</a>:</p>
 <blockquote>
