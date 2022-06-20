@@ -47,7 +47,7 @@ fs::file_info(
 # Remove the .txt files once we've created the .parquet files
 file.remove(
   list.files(
-    path = here::here("data"), 
+    path = here::here(dir), 
     full.names = TRUE, 
     pattern = ".txt$"   # file name ends with ".txt"
   )
