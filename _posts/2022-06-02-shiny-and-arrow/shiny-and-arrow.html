@@ -1600,6 +1600,12 @@ result, you can select a subset of data from a much larger dataset by
 collecting the smaller slices from each file – you don’t have to load
 the whole dataset in memory to slice from it.”</p>
 </blockquote>
+<p>The concept of lazy evaluation with <strong>{dplyr}</strong> is also
+paramount when performing data manipulations and summaries on data
+stored in relational databases. The fact that a data science team can
+leverage those same principles to analyze data stored in
+<strong>.parquet</strong> files, without having to learn a completely
+new approach, is another massive benefit!</p>
 <h2
 id="how-it-all-fits-together-in-shiny-a-use-case-at-ketchbrook-analytics">How
 It All Fits Together in Shiny: A Use Case at Ketchbrook Analytics</h2>
@@ -1768,10 +1774,10 @@ speed improvements.</p>
 <span class='va'>time_txt</span>
 </code></pre>
 </div>
-<pre><code>Time difference of 2.161999 secs</code></pre>
+<pre><code>Time difference of 4.15389 secs</code></pre>
 </div>
 <p>When run against the <strong>.txt</strong> file, the process takes
-2.161999 seconds to run.</p>
+4.15 seconds to run.</p>
 <p>Now let’s try the same <strong>{dplyr}</strong> query against the
 <strong>.parquet</strong> file:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1816,11 +1822,11 @@ speed improvements.</p>
 <span class='va'>time_parquet</span>
 </code></pre>
 </div>
-<pre><code>Time difference of 0.5779669 secs</code></pre>
+<pre><code>Time difference of 0.9713781 secs</code></pre>
 </div>
 <p>Wow! It might not seem like much, but the difference between a user
-having to wait 2.16 seconds for your Shiny app to execute a process
-versus having to wait 0.58 seconds is incredibly significant from a
+having to wait 4.15 seconds for your Shiny app to execute a process
+versus having to wait 0.97 seconds is incredibly significant from a
 <em>user experience</em> standpoint.</p>
 <p>But don’t just take our word for it. Make your next Shiny app an
 <strong>{arrow}</strong>-driven, high-performance experience for your

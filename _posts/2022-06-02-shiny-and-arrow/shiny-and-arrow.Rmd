@@ -66,7 +66,7 @@ The combination of **{arrow}** and **{dplyr}** also results in *lazy evaluation*
 
 > "...[A]ll work is pushed down to the individual data files, and depending on the file format, chunks of data within the files. As a result, you can select a subset of data from a much larger dataset by collecting the smaller slices from each file -- you don’t have to load the whole dataset in memory to slice from it."
 
-The concept of lazy evaluation with `**{dplyr}**` is also paramount when performing data manipulations and summaries on data stored in relational databases. The fact that a data science team can leverage those same principles to analyze data stored in `.parquet` files, without having to learn a completely new approach, is another massive benefit!
+The concept of lazy evaluation with **{dplyr}** is also paramount when performing data manipulations and summaries on data stored in relational databases. The fact that a data science team can leverage those same principles to analyze data stored in **.parquet** files, without having to learn a completely new approach, is another massive benefit!
 
 ## How It All Fits Together in Shiny: A Use Case at Ketchbrook Analytics
 
