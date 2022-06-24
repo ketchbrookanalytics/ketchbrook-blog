@@ -1487,8 +1487,8 @@ They can help communicate your analysis to non-technical stakeholders,
 or enable self-service data exploration for any audience. At <a
 href="https://www.ketchbrookanalytics.com">Ketchbrook Analytics</a>, we
 care a lot about building <em>production-grade</em> quality Shiny apps;
-in other words, we strive to ensure sure that the apps we develop for
-you will run successfully inside your organization with minimal
+in other words, we strive to ensure that the apps we develop for you
+will run successfully inside your organization with minimal
 maintenance.</p>
 <p>Building a working Shiny app that runs on your own laptop can be a
 tricky process itself! However, there are some additional things you
@@ -1623,7 +1623,7 @@ was causing two problems:</p>
 from within the app was slow</li>
 </ol>
 <p>After converting the large <strong>.csv</strong> file into
-<strong>.parquet</strong> format, the data become one-sixth of the size
+<strong>.parquet</strong> format, the data became one-sixth of the size
 of the original <strong>.csv</strong> – plenty of room available on the
 server for the <strong>.parquet</strong> data.</p>
 <p>Further, executing <code>dplyr::filter()</code> on the
@@ -1774,10 +1774,10 @@ speed improvements.</p>
 <span class='va'>time_txt</span>
 </code></pre>
 </div>
-<pre><code>Time difference of 4.15389 secs</code></pre>
+<pre><code>Time difference of 6.388387 secs</code></pre>
 </div>
 <p>When run against the <strong>.txt</strong> file, the process takes
-4.15 seconds to run.</p>
+6.39 seconds to run.</p>
 <p>Now let’s try the same <strong>{dplyr}</strong> query against the
 <strong>.parquet</strong> file:</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1822,11 +1822,11 @@ speed improvements.</p>
 <span class='va'>time_parquet</span>
 </code></pre>
 </div>
-<pre><code>Time difference of 0.9713781 secs</code></pre>
+<pre><code>Time difference of 1.975953 secs</code></pre>
 </div>
 <p>Wow! It might not seem like much, but the difference between a user
-having to wait 4.15 seconds for your Shiny app to execute a process
-versus having to wait 0.97 seconds is incredibly significant from a
+having to wait 6.39 seconds for your Shiny app to execute a process
+versus having to wait 1.98 seconds is incredibly significant from a
 <em>user experience</em> standpoint.</p>
 <p>But don’t just take our word for it. Make your next Shiny app an
 <strong>{arrow}</strong>-driven, high-performance experience for your

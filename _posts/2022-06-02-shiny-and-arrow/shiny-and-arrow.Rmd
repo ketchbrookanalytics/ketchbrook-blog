@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 dir <- here::here("_posts/2022-06-02-shiny-and-arrow/data")
 ```
 
-Shiny apps are incredible tools for bringing data science to life. They can help communicate your analysis to non-technical stakeholders, or enable self-service data exploration for any audience. At [Ketchbrook Analytics](https://www.ketchbrookanalytics.com), we care a lot about building  *production-grade* quality Shiny apps; in other words, we strive to ensure sure that the apps we develop for you will run successfully inside your organization with minimal maintenance. 
+Shiny apps are incredible tools for bringing data science to life. They can help communicate your analysis to non-technical stakeholders, or enable self-service data exploration for any audience. At [Ketchbrook Analytics](https://www.ketchbrookanalytics.com), we care a lot about building  *production-grade* quality Shiny apps; in other words, we strive to ensure that the apps we develop for you will run successfully inside your organization with minimal maintenance. 
 
 Building a working Shiny app that runs on your own laptop can be a tricky process itself! However, there are some additional things you need to consider when taking the next step of *deploying* your app to **production** so that others can reap the benefits of your hard work. One of these considerations is where to *store* the data.
 
@@ -77,7 +77,7 @@ Ketchbrook was developing a Shiny app for a client, for which the relevant data 
 1. There wasn't enough room for the file on their **shinyapps.io** server
 2. Even when run locally, applying filters and aggregations to the data from within the app was slow
 
-After converting the large **.csv** file into **.parquet** format, the data become one-sixth of the size of the original **.csv** -- plenty of room available on the server for the **.parquet** data.
+After converting the large **.csv** file into **.parquet** format, the data became one-sixth of the size of the original **.csv** -- plenty of room available on the server for the **.parquet** data.
 
 Further, executing `dplyr::filter()` on the already-in-memory **.csv** data was taking quite a few seconds for the app to respond. The conversion of the data to **.parquet** format, coupled with executing the **{dplyr}** functions against an **{arrow}** table (instead of an R data frame), drastically reduced the processing time to less than one second.
 
