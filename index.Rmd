@@ -1,5 +1,0 @@
----
-title: "Articles"
-site: distill::distill_website
-listing: posts
----

@@ -1,0 +1,20 @@
+project:
+  type: website
+
+website:
+  title: "Ketchbrook Analytics Blog"
+  favicon: "www/favicon.ico"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/ketchbrookanalytics
+      - icon: linkedin
+        href: https://www.linkedin.com/company/ketchbrook-analytics
+format:
+  html:
+    theme: lux
+    css: styles.css
+
+
+
