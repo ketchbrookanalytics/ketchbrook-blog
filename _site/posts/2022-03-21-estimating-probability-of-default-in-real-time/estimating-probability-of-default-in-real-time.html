@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael Thomas">
+<meta name="dcterms.date" content="2022-03-21">
+<meta name="description" content="And the many benefits of a forward-looking approach.">
+
+<title>Ketchbrook Analytics Blog - Estimating Probability of Default in Real-Time</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../www/favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="../../site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
+<script src="../../site_libs/echarts4r-4.8.0/echarts-en.min.js"></script>
+<script src="../../site_libs/echarts4r-4.8.0/ecStat.min.js"></script>
+<script src="../../site_libs/echarts4r-4.8.0/dataTool.min.js"></script>
+<script src="../../site_libs/echarts4r-binding-0.4.4/echarts4r.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Ketchbrook Analytics Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ketchbrookanalytics" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/company/ketchbrook-analytics" rel="" target=""><i class="bi bi-linkedin" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Estimating Probability of Default in Real-Time</h1>
+                  <div>
+        <div class="description">
+          And the many benefits of a forward-looking approach.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Michael Thomas </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 21, 2022</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>In our last blog post, we discussed some high-level strategies for <a href="https://blog.ketchbrookanalytics.com/posts/2022-02-19-making-small-data-bigger/">getting more of your data into your model</a>. This week we are going to dive deeper into the benefits of credit risk modeling frameworks that go beyond the “traditional” (linear/logistic regression, decision trees, etc.) approaches.</p>
+<section id="making-risk-more-dynamic" class="level2">
+<h2 class="anchored" data-anchor-id="making-risk-more-dynamic">Making Risk More Dynamic</h2>
+<p>Let’s envision a world where, instead of disparate models that assess probability of default at the time of certain credit events (i.e., one model for origination, another model for renewal, a third for <a href="https://www.occ.treas.gov/topics/supervision-and-examination/bank-operations/accounting/current-expected-credit-losses/index-current-expected-credit-losses.html">CECL</a>, etc.), we have a <em>single</em> model that estimates PD in <em>real-time</em>.</p>
+<p>This world is not just possible – it’s a framework that Ketchbrook Analytics has spent years developing and building out for our banking clients.</p>
+<p>The <strong>value proposition</strong> for this framework includes <em>greater flexibility</em>, <em>decreased risk</em> and <em>improved insights</em>. The <strong>technical details</strong> of the modeling approach allow any organization to:</p>
+<ul>
+<li><p>incorporate new information (new repayment data, new economic outlook data, etc.) about a loan to <em>continuously</em> update it’s predicted probability of default</p></li>
+<li><p>look at its portfolio on any given day and understand the current risk for a single loan, a segment of loans, or the entire portfolio</p></li>
+<li><p>simulate the impact of a new deal on the portfolio during the underwriting process</p></li>
+</ul>
+<p>From a modeling perspective, this means that we want our inputs (predictors) to be the <a href="https://blog.ketchbrookanalytics.com/posts/2022-02-19-making-small-data-bigger#aggregation-is-limiting">longitudinal attributes</a> about the loan, and the model output to be probability of default.</p>
+<p><img src="inputs_outputs.PNG" class="img-fluid"></p>
+<p>With each additional on-time payment, we would expect our model to decrease the associated probability of default. Conversely, if new economic outlook data forecasts worsening industry conditions, the model should update the probability of default to show increasing risk.</p>
+</section>
+<section id="taking-a-forward-looking-approach" class="level2">
+<h2 class="anchored" data-anchor-id="taking-a-forward-looking-approach">Taking a Forward-Looking Approach</h2>
+<p>Even more specifically, our model’s output should not be a single number – it should instead be a <em>curve</em> that provides us with not just a predicted probability of default, but a probability of default <em>over the life of the loan</em>.</p>
+<p>Take <strong>Loan #1234</strong>, for example. This five-year term loan just came into our bank today and passed through our model, which returned the following probability of default curve prediction:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="echarts4r html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c6de7b26a851145dc579" style="width:100%;height:500px;"></div>
+<script type="application/json" data-for="htmlwidget-c6de7b26a851145dc579">{"x":{"theme":"","tl":false,"draw":true,"renderer":"canvas","events":[],"buttons":[],"opts":{"yAxis":[{"show":true,"name":"","axisLabel":{"formatter":"function(value, index) {\n        var fmt = new Intl.NumberFormat('en', {\"style\":\"percent\",\"minimumFractionDigits\":0,\"maximumFractionDigits\":0,\"currency\":\"USD\"});\n        return fmt.format(value);\n    }"}}],"xAxis":[{"data":["2022","2023","2024","2025","2026"],"type":"category","boundaryGap":true,"name":"Year"}],"legend":{"data":["Probability of Default"],"show":false,"type":"plain"},"series":[{"data":[{"value":["2022","0.007503999"]},{"value":["2023","0.019517418"]},{"value":["2024","0.065092755"]},{"value":["2025","0.088780812"]},{"value":["2026","0.160179988"]}],"yAxisIndex":0,"xAxisIndex":0,"name":"Probability of Default","type":"line","coordinateSystem":"cartesian2d","areaStyle":[],"smooth":true}],"title":[{"text":"Loan #1234 (At Origination)","subtext":"Estimated Probability of Default over Lifetime (5-Year Term)"}],"tooltip":{"trigger":"axis","formatter":"function(params, ticket, callback) {\n        var fmt = new Intl.NumberFormat('en', {\"style\":\"percent\",\"minimumFractionDigits\":1,\"maximumFractionDigits\":1,\"currency\":\"USD\"});\n        var res = params[0].value[0];\n        for (i = 0; i < params.length; i++) {\n            res += '<br />' +\n                   params[i].marker + ' ' +\n                   params[i].seriesName + ': ' +\n                   fmt.format(parseFloat(params[i].value[1]));\n        }\n        return res;\n    }","axisPointer":{"label":"function(params, ticket, callback) {\n        var fmt = new Intl.NumberFormat('en', {\"style\":\"percent\",\"minimumFractionDigits\":1,\"maximumFractionDigits\":1,\"currency\":\"USD\"});\n        var res = params[0].value[0];\n        for (i = 0; i < params.length; i++) {\n            res += '<br />' +\n                   params[i].marker + ' ' +\n                   params[i].seriesName + ': ' +\n                   fmt.format(parseFloat(params[i].value[1]));\n        }\n        return res;\n    }"}}},"dispose":true},"evals":["opts.yAxis.0.axisLabel.formatter","opts.tooltip.formatter","opts.tooltip.axisPointer.label"],"jsHooks":[]}</script>
+</div>
+</div>
+<p><em>[Tip: You can hover over the chart above – it’s interactive! Each point represents the probability of the loan defaulting at or before that date. If we want to know the probability of a specific loan (including a new loan, a renewal, or a group of existing loans in a portfolio) defaulting today, we can easily get this by looking at the left-most point on the PD curve(s). If we want to know the probability of a loan ever defaulting during its life, we can easily get this by looking at the right-most point.]</em></p>
+<p>Our model estimates that <strong>Loan #1234</strong> has a 0.8% probability of defaulting sometime prior to the end of this year (2022), a 2.0% probability of defaulting between now and the end of 2023, and so on, with a 16.0% probability of defaulting during its life.</p>
+<p>Fast-forward two years later, and <strong>Loan #1234</strong> has not yet defaulted, with three years remaining on its five-year term. We have new information about this loan’s performance that we did not have at origination (e.g., repayment history), as well as updated information (e.g., industry outlook). Running it through our model again, the curve has likely changed:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div class="echarts4r html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-526384d0667b76f3da59" style="width:100%;height:500px;"></div>
+<script type="application/json" data-for="htmlwidget-526384d0667b76f3da59">{"x":{"theme":"","tl":false,"draw":true,"renderer":"canvas","events":[],"buttons":[],"opts":{"yAxis":[{"show":true,"name":"","axisLabel":{"formatter":"function(value, index) {\n        var fmt = new Intl.NumberFormat('en', {\"style\":\"percent\",\"minimumFractionDigits\":0,\"maximumFractionDigits\":0,\"currency\":\"USD\"});\n        return fmt.format(value);\n    }"}}],"xAxis":[{"data":["2024","2025","2026"],"type":"category","boundaryGap":true,"name":"Year"}],"legend":{"data":["Probability of Default"],"show":false,"type":"plain"},"series":[{"data":[{"value":["2024","0.04595530"]},{"value":["2025","0.04787393"]},{"value":["2026","0.07164692"]}],"yAxisIndex":0,"xAxisIndex":0,"name":"Probability of Default","type":"line","coordinateSystem":"cartesian2d","areaStyle":[],"smooth":true}],"title":[{"text":"Loan #1234 (Two Years Later)","subtext":"Estimated Probability of Default over Lifetime (5-Year Term)"}],"tooltip":{"trigger":"axis","formatter":"function(params, ticket, callback) {\n        var fmt = new Intl.NumberFormat('en', {\"style\":\"percent\",\"minimumFractionDigits\":1,\"maximumFractionDigits\":1,\"currency\":\"USD\"});\n        var res = params[0].value[0];\n        for (i = 0; i < params.length; i++) {\n            res += '<br />' +\n                   params[i].marker + ' ' +\n                   params[i].seriesName + ': ' +\n                   fmt.format(parseFloat(params[i].value[1]));\n        }\n        return res;\n    }","axisPointer":{"label":"function(params, ticket, callback) {\n        var fmt = new Intl.NumberFormat('en', {\"style\":\"percent\",\"minimumFractionDigits\":1,\"maximumFractionDigits\":1,\"currency\":\"USD\"});\n        var res = params[0].value[0];\n        for (i = 0; i < params.length; i++) {\n            res += '<br />' +\n                   params[i].marker + ' ' +\n                   params[i].seriesName + ': ' +\n                   fmt.format(parseFloat(params[i].value[1]));\n        }\n        return res;\n    }"}}},"dispose":true},"evals":["opts.yAxis.0.axisLabel.formatter","opts.tooltip.formatter","opts.tooltip.axisPointer.label"],"jsHooks":[]}</script>
+</div>
+</div>
+<p>In the case of <strong>Loan #1234</strong>, it looks like it has been performing pretty well, since the <em>updated</em> probability of defaulting before term is down from 16.0% to 7.2%.</p>
+<section id="one-model-to-rule-them-all" class="level3">
+<h3 class="anchored" data-anchor-id="one-model-to-rule-them-all">One Model to Rule Them All</h3>
+<p>In our toy example, we used an annual frequency along the x-axis of our charts. In practice, this frequency would be much more granular – at least monthly, and hopefully daily. Remember, the time granularity of our model’s output is tied directly to the frequency of the input data. In other words, if we get new repayment &amp; economic outlook data each <em>month</em>, then (1) our model will output a predicted probability of default for each <em>month</em> into the future, and (2) that prediction curve can be updated each <em>month</em>.</p>
+<blockquote class="blockquote">
+<p>From a practical perspective, having a modeling framework that provides probability of default estimates in <strong>real-time</strong> (including origination) that updates dynamically as we get new information allows us to quickly build automated loan decisioning, scorecard lending, CECL, and stress testing models along the <strong>same</strong> probability of default framework.</p>
+</blockquote>
+</section>
+</section>
+<section id="interested-in-learning-more" class="level2">
+<h2 class="anchored" data-anchor-id="interested-in-learning-more">Interested in Learning More?</h2>
+<p>Get in touch with us today at <a href="mailto:info@ketchbrookanalytics.com">info@ketchbrookanalytics.com</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

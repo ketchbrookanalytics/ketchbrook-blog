@@ -1,0 +1,21 @@
+---
+title: "About"
+image: www/ka_logo_zoomed_out.png
+about:
+  template: jolla
+  links:
+    - icon: email
+      text: Email
+      href: mailto:info@ketchbrookanalytics.com
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com/company/ketchbrook-analytics
+    - icon: github
+      text: Github
+      href: https://github.com/ketchbrookanalytics
+
+---
+
+Don't be a stranger -- we would love to hear from you!
+
+Get in touch with us at [info@ketchbrookanalytics.com](mailto:info@ketchbrookanalytics.com) today.

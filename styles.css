@@ -1,0 +1,9 @@
+/* css styles */
+
+.navbar {
+  background-color: #2f73cd;
+}
+
+#title-block-header.quarto-title-block.default .quarto-title .title {
+    color: #fff;
+}
