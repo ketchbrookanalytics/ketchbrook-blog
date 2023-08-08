@@ -1,9 +1,21 @@
 /* css styles */
 
+/* Set the navbar background color */
 .navbar {
   background-color: #2f73cd;
 }
 
+/* Set the font color of the title in the navbar */
+.navbar-title {
+  color: #fff;
+}
+
+/* Set the font color of the other items in the navbar */
+.navbar-dark .navbar-nav .nav-link {
+  color: #fff;
+}
+
+/* Set the font color of the text in the title block */
 #title-block-header.quarto-title-block.default .quarto-title .title {
     color: #fff;
 }

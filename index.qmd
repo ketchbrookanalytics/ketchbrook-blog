@@ -1,5 +1,5 @@
 ---
-title: "The latest in Data Science"
+title: "The Latest in Data Science"
 listing:
   contents: posts
   sort: "date desc"
