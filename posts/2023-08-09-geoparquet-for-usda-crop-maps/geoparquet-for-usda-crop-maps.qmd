@@ -179,28 +179,23 @@ head(lookup) |>
 Now let's simply join this data into the original CSB data, after we clean up a bit.
 
 ```{r}
-# create long dataframe for joining
-raw_long <- mydata |>
-  dplyr::mutate(id = dplyr::row_number()) |>
-  tidyr::pivot_longer(
-    cols = tidyselect::starts_with("R"), 
-    names_to = "Column", 
-    values_to = "Value"
-  )
+# Create a helper function to replace the crop code integer values with the 
+# plain-English descriptions
+lookup_codes <- function(var, codes) {
 
-# join lookup table
-result <- raw_long |>
-  dplyr::left_join(
-    lookup, 
-    by = c("Value" = "categorization_code")
-  ) |>
-  sf::st_drop_geometry() |>
-  tidyr::pivot_wider(
-    id_cols = "id", 
-    names_from = "Column", 
-    values_from = "land_cover"
-  ) |>
-  dplyr::select(-id)
+  codes$land_cover[match(x = {{ var }}, table = codes$categorization_code)]
+
+}
+
+# Replace the integer codes in the crop rotation columns with the plain-English
+# descriptions of the cover
+clean <- raw |> 
+  dplyr::mutate(
+    dplyr::across(
+      .cols = tidyselect::matches("R[0-9][0-9]"),
+      .fns = function(x) lookup_codes(var = x, codes = lookup)
+    )
+  )
 
 just_the_crops <- mydata |>
   dplyr::select(!tidyselect::starts_with("R"))
