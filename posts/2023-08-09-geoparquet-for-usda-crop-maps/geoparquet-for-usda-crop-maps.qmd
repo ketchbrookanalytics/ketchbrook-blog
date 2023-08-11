@@ -18,75 +18,68 @@ editor: visual
 
 ![](hero_raw.png){fig-align="center"}
 
-## A very thicc data drop from USDA
+## A Big (Data) Release from the USDA
 
-When the USDA dropped the Crop Sequence Boundaries (CSB) data set this summer, we knew it would be huge, but we didn't know what we should do with it off the bat. Much like a five year old who picking up a cool stick; we knew it was something, so we decided to start swinging it around our head until something sweet happened.
+When the [USDA](https://www.usda.gov/) released its [Crop Sequence Boundaries (CSB) data set](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/) last month, we knew it was huge news. What we didn't realize immediately, however, was that the *data* would also be **huge**. In fact, as we set out to explore how this dataset could be useful (particularly to our Farm Credit System clients), simply trying to read this data in both Python and R took hours before maxxing out the memory on our laptops, resulting in quite a few ["BSOD"s](https://en.wikipedia.org/wiki/Blue_screen_of_death)[^1].
 
-The [CSB](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/) data set produces 'estimates of field boundaries, crop acreage, and crop rotations across the contiguous United States.' In a nutshell, it shows what is planted where, and how that has changed over time.
+[^1]: We *did* successfully read the CSB data into QGIS without any blue screens, but this post is aimed at the R and Python crowd
 
-::: callout-note
-## CSB: Crop Sequence Boundaries
+![](bsod.png)
 
-For more see the USDA CSB homepage: [LINK](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/index.php)
-:::
+For some more background, the *CSB* dataset contains *"...estimates of field boundaries, crop acreage, and crop rotations across the contiguous United States."*[^2] In a nutshell, it shows what is planted where, and how that has changed over time.
 
-[![CSB in action](boundaries.png){fig-align="center"}](https://www.nass.usda.gov/Education_and_Outreach/Reports,_Presentations_and_Conferences/reports/conferences/ESRI-2023/Maximizing%20ArcGIS%20Pro%20for%20The%20Crop%20Sequence%20Boundaries%20(CSB)%20Project.pdf)
+[^2]: https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/
 
-### Problem: it's large
+[![CSB data in action](boundaries.png){fig-align="center"}](https://www.nass.usda.gov/Education_and_Outreach/Reports,_Presentations_and_Conferences/reports/conferences/ESRI-2023/Maximizing%20ArcGIS%20Pro%20for%20The%20Crop%20Sequence%20Boundaries%20(CSB)%20Project.pdf)
 
-After downloading the [geodatabase files](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/) from the USDA CSB homepage, we quickly realized that we couldn't simply read these large files into our local R or python sessions. [QGIS](https://www.qgis.org/en/site/index.html) could handle the files, but we would much rather work in R.
+After downloading the *geodatabase* files from the **Datasets** section of the [CSB home page](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/) and failing to successfully read them into R or Python, we needed to come up with an alternative strategy to analyze the data in these files without running out of memory. We decided to try to get the data into a different file format than geodatabase (*.gdb*), and use the current cutting-edge file format: *Parquet* (pronounced "par-kay").
 
-### Initial thoughts
+### Why Bother?
 
-At this point, we knew we wanted to work with the data in R, but we couldn't even load the files into our local R session without crashing our not-weak PCs. So we drew up a plan:
+As a consulting firm that does a lot of work in the ag finance space, we are always trying to stay ahead of the curve and discover unique ways to provide value to our clients.
 
-1.  Get the data into a more efficient file format; read it in
+Crops are the primary output of (non-livestock) producers. Knowing what crops are planted where, and how the composition of those crops has changed over time may be useful for a few reasons:
 
-2.  Come up with some good use cases for the CSB data
+1. Marketing to existing customers or identifying prospective clients
+2. Evaluating concentration risk (is your ACA's loan portfolio increasing/decreasing in its diversity of crops farmed?)
+3. Identifying crop rotation trends over time for capital/insurance planning purposes
 
-3.  Make some plots and maps that deliver useful insights
+To further level-set, the audience for this post is:
 
-### The audience
+> Analysts, data scientists and business intelligence folks working in the Farm Credit system.
 
-As consultants, we always work backwards from what our customer needs/wants. In order to do that, we had to get into the head of someone in ag finance and think about what would be most useful within this new data set.
+Lastly, for every licensed product that Ketchbrook develops (such as our [{KAscore} R package](https://ketchbrookanalytics.github.io/KAscore/)), we aim to provide one open source solution (such as our [{migrate} R package](https://github.com/mthomas-ketchbrook/migrate), or this open CSB data)
 
-Crops are the primary output of (non-livestock) producers. Knowing what crops are planted where, and how the composition of those crops has changed over time (we believe) is useful for anyone marketing to folks whose business revolves around that type of thing.
+## From geodatabase to geoparquet
 
-So our audience is:
+We know that the *geodatabase* file format that our data comes in won't work for local analysis. The CSB homepage recommends using ArcGIS to analyse the 19.5 million unique polygons within the data set, but we prefer to use open source software instead of pay-for-play tools.
 
-> Analysts, data scientists and BI folks working in the Farm Credit system.
+[Geoparquet](https://geoparquet.org/) is a newer file type that leverages the powerful Apache parquet columnar data storage format, which stores data in `.parquet` files for efficient loads, compresses well and decreases data size tremendously.\* [\* [Intro to geoparquet](https://getindata.com/blog/introducing-geoparquet-data-format/).]{.aside}
 
-## The analysis
+The goal of the **Geoparquet** project is for `.parquet` to become the new standard file format in the geospatial world, replacing the *shapefile*.
 
-With the task firmly established and our audience tacked down, we can begin the fun stuff.
-
-### From geodatabase to geoparquet
-
-We know that the geodatabase file(s) that our data comes in won't work for local analysis. The CSB homepage recommends using an ArcGIS to analyse the 19.5 million unique polygons within the data set - but we like open source and don't like the vendor tie-in and cost associated with using ArcGIS for this analysis.
-
-[Geoparquet](https://geoparquet.org/) is a newer file type that leverages the powerful Apache parquet columnar data storage format, which stores data for efficient loads, compresses well and decreases data size tremendously.\* [\* [Intro to geoparquet](https://getindata.com/blog/introducing-geoparquet-data-format/).]{.aside}
-
-The goal of the geoparquet format is become the new standard file format in the geospatial world, replacing the shapefile as the standard.
-
-For our purposes, we want to be actually able to read those 19 million polygons into our R session, so we decided to convert the geodatabase file into partitioned geoparquet files.
-
-In order to do this, we needed to saddle up and "cowboy code" some python to iteratively read in the data and write to parquet.
+For our purposes, we want to be able to read those 19 million polygons in the CSB data into our R session, so we decided to convert the geodatabase file into partitioned `.parquet` files. After some research, we discovered that the {geopandas} Python package provides the ability to read in only a *specified set of rows* of the data from a `.gdb` file, instead of having to read the entire thing into memory. While this approach is admittedly somewhat crude, it was the best that we could come up with -- and it worked!
 
 ```{python}
 #| eval: false
 
 import geopandas as gpd
 
-# Define path to the un-zipped .gdb
+# Define path to the un-zipped .gdb file
 gdb_path = "./National_Final_gdb/CSB1522.gdb"
 
 # Define path to destination folder to land .parquet files
-parquet_dest = "./some/folder/somewhere/"
+parquet_dest = "/some/folder/somewhere/"
 
+# Read in "chunks" of the data from the .gdb file (1 million rows at a time), 
+# and write the "chunks" out to separate .parquet files
 row_start = 0
 row_end = 1000000
 
-for r in range(0, 20):
+# Write out every 1MM rows in the data from the .gsb file to a new .parquet file
+# (this loop will work for up to 100MM rows of data; you could -- and probably 
+# should -- do this in a `while` loop, instead)
+for r in range(0, 100):
     print(f'Writing rows {row_start}:{row_end}')
     rows = slice(row_start, row_end)
     geo = gpd.read_file(gdb_path, rows=rows)
@@ -98,97 +91,125 @@ for r in range(0, 20):
         geo.to_parquet(path=path)
         row_start = row_end + 1
         row_end = (r + 2) * 1000000
-
 ```
 
-We decided to partition the data by year and state. The most recent file contains an eight-year history of data, which is sufficient for our purposes now. By partitioning the data in such a way, we will reap huge performance gains on read.
-
-The data was uploaded to a public Amazon s3 bucket that anyone can read from (including you).
+The last step involved reading in the new *.parquet* files and re-writing them out (to .parquet format again), this time partitioned by state, instead of by an arbitrary number of rows. By partitioning (i.e., creating separate .parquet files for each *"partition"*) the data this way, we can reap huge performance gains when reading the data into memory. Also, we imagine that end users of this data will likely be interested in analyzing crop service boundaries for a few particular states. Partitioning the data by state will lead to additional performance improvements, since only the .parquet files for the state(s) of interest will need to be computed on. We decided to switch to R for this step (and for the rest of the analysis).
 
 ```{r}
-#| warning: false
-#| message: false
+#| eval: false
 
-library(arrow)
-library(CGPfunctions)
-library(dplyr)
-library(ggcharts)
-library(ggplot2)
-library(gt)
-library(here)
-library(leaflet)
-library(patchwork)
-library(readr)
-library(sfarrow)
-library(tidyr)
-
-
-bucket <- arrow::s3_bucket("ketchbrook-public-usda-nass-csb")
+# Establish an {arrow} connection to the .parquet files partitioned every 1MM rows,
+# and re-write the data out to .parquet files partitioned by STATEFIPS code (State)
+arrow::open_dataset("/some/folder/somewhere/") |> 
+  arrow::write_dataset(
+    path = "/some/other_folder/somewhere/",
+    partitioning = "STATEFIPS",
+    format = "parquet"
+  )
 ```
+
 
 ::: callout-tip
 ## You can use this dataset!
 
-Ketchbrook Analytics has made this optimized geoparquet dataset available to the public.
+Ketchbrook Analytics has made this optimized geoparquet dataset available to the public, via an AWS S3 Bucket. Currently, we have only hosted the most recent CSB data (which contains an eight-year history of crop sequence boundaries, as of 2022), but we plan to migrate the additional (older) data to S3 soon.
 :::
 
-### But first, some shop talk
+```{r}
+#| message: false
+#| warning: false
 
-Now that we've established a connection to our optimized geoparquet files stored in the cloud, we should discuss best practices for working with these types of files.
+library(arrow)
+library(stringr)
 
-First, we're gonna get lazy. This is a good thing. When we combine geoparquet (and the underlying Arrow guts) with [dplyr](https://dplyr.tidyverse.org/) verbs, we get *lazy evaluation*. Lazy evaluation simply means that we build a recipe of what we want to do with the data set, but we only apply the recipe when we are ready to bring the *transformed* data into memory. In other words, we can filter our data set by a single state without having to mess with all 47 others. \* [\* CSB omits Hawaii and Alaska.]{.aside}
+# Establish a connection to the AWS S3 bucket
+bucket <- arrow::s3_bucket("ketchbrook-public-usda-nass-csb")
 
-For our purposes, we will analyze a small portion of the total United States, so this lazy evaluation will give us tremendous speed gainz. \* [\* [For more see our guest post on the Posit blog](https://posit.co/blog/shiny-and-arrow/).]{.aside}
+# List the paths to the first few .parquet files in the `year=2022` directory
+bucket$ls(path = "year=2022", recursive = TRUE) |> 
+    stringr::str_subset(pattern = ".parquet$") |> 
+    head()
+```
 
-### Light data cleaning
+## When Lazy Becomes Efficient
 
-Let's take our first peek at the data to see what we're dealing with. Note that the [sfarrow](https://github.com/wcjochem/sfarrow) package let's us parse our geoparquet directly into the popular [sf](https://r-spatial.github.io/sf/) object.
+Now that we've established a connection to our optimized *.parquet* files stored in the cloud, we should discuss best practices for working with these types of files.
+
+First, let's get *lazy* (in the good way). When we combine the underlying Arrow specification behind Parquet with R's [dplyr](https://dplyr.tidyverse.org/) functions, we can take advantage of *lazy evaluation*. Lazy evaluation simply means that we build a *recipe* of what we want to do with the data set, but we only apply the recipe when we are ready to bring the *transformed* data into memory. In other words, we can filter our data set (on *disk*) by state, county, acreage, etc., before bringing it into our R environment.
+
+For our purposes, we will analyze a small portion of the total United States, so this lazy evaluation will give us tremendous speed gainz. \* [\* [For more information on Parquet and lazy evaluation, see our guest post on the Posit blog](https://posit.co/blog/shiny-and-arrow/).]{.aside}
+
+### Data Preparation
+
+Let's take our first peek at the data to see what we're dealing with. Note that the [sfarrow](https://github.com/wcjochem/sfarrow) package lets us parse our Parquet data directly into the popular geospatial [sf](https://r-spatial.github.io/sf/) object format. This will help us build maps and perform geospatial calculations downstream.
 
 ```{r}
+#| message: false
+#| warning: false
 
+library(sfarrow)
+library(dplyr)
+
+# This code should only take a few seconds to run -- try it yourself!
 raw <- arrow::open_dataset(bucket) |>
   dplyr::filter(STATEFIPS == 9) |>  # Connecticut
   dplyr::filter(CNTYFIPS == "003") |>  # Hartford county
-  sfarrow::read_sf_dataset()  # interpret `geometry` as sf object
+  sfarrow::read_sf_dataset()  # interpret `geometry` column as an `sf` object
 
+# List the columns, types, and first few values in each column
 dplyr::glimpse(raw)
 ```
 
-So we a unique identifier for each field `CSBID`, we have what appear to be crop codes for a given year for that field `R15 … R22` and we have some fields that describe the polygon that we don't really care about now.
+So we a unique identifier for each field `CSBID`, we have what appear to be crop codes for a given year for that field `R15 … R22`, and we have some additional fields that describe the polygon. The crop *codes* aren't particularly useful to us; We need to find out which crop each of those codes actually represents (i.e., we need a lookup table).
 
-We need to find the crop code lookup data and join them into this dataframe.
-
-Unfortunately, the crop codes are stored in an [ugly XML file](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/metadata_Crop-Sequence-Boundaries-2022.htm), but take heart, for we have thrown the codes into a csv for easy parsing. \* [\* [See location URL](https://github.com).]{.aside}
+Unfortunately, the crop codes metadata is stored in an [ugly XML file](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/metadata_Crop-Sequence-Boundaries-2022.htm), but our team took the time to create a crop codes lookup table in .csv format for your convenience. \* [\* [Crop Codes Lookup Table](https://github.com/ketchbrookanalytics/usda-csb-data/blob/main/data/crop_types.csv).]{.aside}
 
 ```{r}
-#| warning: false
-#| message: false
+# Read in the crop codes lookup table
+lookup <- read.csv(
+  file = "https://raw.githubusercontent.com/ketchbrookanalytics/usda-csb-data/main/data/crop_types.csv",
+  colClasses = c("integer", "character")
+)
 
-
-lookup <- readr::read_csv("crop_types.csv")
-
-gt::gt(head(lookup))
+# Take a look at the first few rows of the crop codes lookup table
+head(lookup) |> 
+  knitr::kable(align = c("c", "l"))
 ```
 
 Now let's simply join this data in, after we clean up a bit.
 
 ```{r}
-# remove any NAs
+# Replace any NA values in the crop codes columns with zeros
 mydata <- raw |>
-  dplyr::mutate(across(tidyselect::starts_with("R"), ~ tidyr::replace_na(as.numeric(.x), 0)))
+  dplyr::mutate(
+    dplyr::across(
+      .cols = tidyselect::starts_with("R"), 
+      .fns = function(x) tidyr::replace_na(as.numeric(x), 0)
+    )
+  )
 
 # create long dataframe for joining
 raw_long <- mydata |>
   dplyr::mutate(id = dplyr::row_number()) |>
-  tidyr::pivot_longer(cols = tidyselect::starts_with("R"), names_to = "Column", values_to = "Value")
+  tidyr::pivot_longer(
+    cols = tidyselect::starts_with("R"), 
+    names_to = "Column", 
+    values_to = "Value"
+  )
 
 # join lookup table
 result <- raw_long |>
-  dplyr::left_join(lookup, by = c("Value" = "categorization_code")) |>
+  dplyr::left_join(
+    lookup, 
+    by = c("Value" = "categorization_code")
+  ) |>
   sf::st_drop_geometry() |>
-  tidyr::pivot_wider(id_cols = "id", names_from = "Column", values_from = "land_cover") |>
+  tidyr::pivot_wider(
+    id_cols = "id", 
+    names_from = "Column", 
+    values_from = "land_cover"
+  ) |>
   dplyr::select(-id)
-
 
 just_the_crops <- mydata |>
   dplyr::select(!tidyselect::starts_with("R"))
@@ -205,7 +226,10 @@ rename_function <- function(col_name) {
 
 # Rename columns starting with 'R'
 to_plot <- final |>
-  dplyr::rename_with(rename_function, tidyselect::starts_with("R"))
+  dplyr::rename_with(
+    .fn = rename_function, 
+    .cols = tidyselect::starts_with("R")
+  )
 ```
 
 Our year - crop fields are now intelligible:
@@ -215,7 +239,7 @@ to_plot |>
   sf::st_drop_geometry() |> 
   dplyr::select(CSBID, `2017`:`2022`) |> 
   head() |> 
-  gt::gt()
+  knitr::kable()
 ```
 
 Now we're dangerous. First let's do some basic plotting to make sure it looks right.
@@ -224,8 +248,10 @@ Now we're dangerous. First let's do some basic plotting to make sure it looks ri
 
 ```{r}
 to_plot |> 
-  ggplot() +
-    geom_sf(aes(fill = `2022`))
+  ggplot2::ggplot() +
+    ggplot2::geom_sf(
+      ggplot2::aes(fill = `2022`)
+    )
 ```
 
 This looks good. We plotted all the crop fields found in Hartford County, Connecticut in 2022.
