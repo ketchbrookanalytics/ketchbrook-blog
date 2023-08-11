@@ -176,18 +176,9 @@ head(lookup) |>
   knitr::kable(align = c("c", "l"))
 ```
 
-Now let's simply join this data in, after we clean up a bit.
+Now let's simply join this data into the original CSB data, after we clean up a bit.
 
 ```{r}
-# Replace any NA values in the crop codes columns with zeros
-mydata <- raw |>
-  dplyr::mutate(
-    dplyr::across(
-      .cols = tidyselect::starts_with("R"), 
-      .fns = function(x) tidyr::replace_na(as.numeric(x), 0)
-    )
-  )
-
 # create long dataframe for joining
 raw_long <- mydata |>
   dplyr::mutate(id = dplyr::row_number()) |>
