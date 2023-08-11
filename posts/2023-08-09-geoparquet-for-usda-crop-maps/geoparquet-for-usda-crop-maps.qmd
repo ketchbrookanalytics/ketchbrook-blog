@@ -176,7 +176,7 @@ head(lookup) |>
   knitr::kable(align = c("c", "l"))
 ```
 
-Now let's simply join this data into the original CSB data, after we clean up a bit.
+Now, let's replace the integer codes in the original CSB data with the descriptions from the lookup table.
 
 ```{r}
 # Create a helper function to replace the crop code integer values with the 
@@ -195,36 +195,20 @@ clean <- raw |>
       .cols = tidyselect::matches("R[0-9][0-9]"),
       .fns = function(x) lookup_codes(var = x, codes = lookup)
     )
-  )
-
-just_the_crops <- mydata |>
-  dplyr::select(!tidyselect::starts_with("R"))
-
-final <- dplyr::bind_cols(just_the_crops, result)
-
-rename_function <- function(col_name) {
-  dplyr::if_else(
-    startsWith(col_name, "R"),
-    return(paste0("20", substring(col_name, 2))),
-    return(col_name)
-  )
-}
-
-# Rename columns starting with 'R'
-to_plot <- final |>
+  ) |> 
   dplyr::rename_with(
-    .fn = rename_function, 
-    .cols = tidyselect::starts_with("R")
+    .fn = function(x) gsub("R", "20", x),
+    .cols = tidyselect::matches("R[0-9][0-9]")
   )
 ```
 
-Our year - crop fields are now intelligible:
+We can take a look at how the crop cover changed for a few individual geometries (crop service boundaries) between 2020 and 2022.
 
 ```{r}
-to_plot |> 
+clean |> 
   sf::st_drop_geometry() |> 
-  dplyr::select(CSBID, `2017`:`2022`) |> 
-  head() |> 
+  dplyr::select(CSBID, `2020`:`2022`) |> 
+  dplyr::slice(6:10) |> 
   knitr::kable()
 ```
 
@@ -233,11 +217,20 @@ Now we're dangerous. First let's do some basic plotting to make sure it looks ri
 ### First plots
 
 ```{r}
-to_plot |> 
-  ggplot2::ggplot() +
-    ggplot2::geom_sf(
-      ggplot2::aes(fill = `2022`)
-    )
+#| fig.height: 10
+
+clean |> 
+  ggplot2::ggplot(
+    ggplot2::aes(fill = `2022`)
+  ) + 
+  ggplot2::geom_sf() + 
+  ggplot2::labs(
+    title = "Crop Cover Map (2022)"
+  ) +
+  ggplot2::theme(
+    legend.position = "top",
+    legend.title = ggplot2::element_blank()
+  )
 ```
 
 This looks good. We plotted all the crop fields found in Hartford County, Connecticut in 2022.
