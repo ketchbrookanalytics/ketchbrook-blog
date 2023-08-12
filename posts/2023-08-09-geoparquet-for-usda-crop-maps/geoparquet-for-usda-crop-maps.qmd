@@ -168,7 +168,8 @@ Unfortunately, the crop codes metadata is stored in an [ugly XML file](https://w
 # Read in the crop codes lookup table
 lookup <- read.csv(
   file = "https://raw.githubusercontent.com/ketchbrookanalytics/usda-csb-data/main/data/crop_types.csv",
-  colClasses = c("integer", "character")
+  colClasses = c("integer", "character"),
+  strip.white = TRUE
 )
 
 # Take a look at the first few rows of the crop codes lookup table
@@ -196,6 +197,7 @@ clean <- raw |>
       .fns = function(x) lookup_codes(var = x, codes = lookup)
     )
   ) |> 
+  # Rename the "R*" columns to the full year
   dplyr::rename_with(
     .fn = function(x) gsub("R", "20", x),
     .cols = tidyselect::matches("R[0-9][0-9]")
@@ -241,129 +243,138 @@ We want to make a bite-sized data graphic that we can reuse over different geogr
 
 #### Leaflet map
 
-[Leaflet](https://rstudio.github.io/leaflet/) maps are handy interactive viz that we can embed in any html document. But before we make the map, let's find out which crops are most prevalent in Hartford county so we don't end up with a mess of a map.
+[Leaflet](https://rstudio.github.io/leaflet/) maps are handy for interactive visualization that we can embed in any HTML document or webpage. But before we make the map, let's find out which crops are most prevalent in Hartford County so we don't overplot.
 
 ```{r}
-to_plot |> 
+top_3 <- clean |> 
   sf::st_drop_geometry() |> 
-  dplyr::group_by(`2022`) |> 
-  dplyr::summarise(cnt = dplyr::n()) |> 
-  dplyr::ungroup() |> 
-  dplyr::arrange(dplyr::desc(cnt)) |> 
-  dplyr::slice_head(n = 3) |> 
-  gt::gt()
+  dplyr::count(Crop = `2022`, name = "Count", sort = TRUE) |> 
+  dplyr::slice_head(n = 3)
+
+top_3 |> 
+  knitr::kable(
+    format.arg = list(NULL, big.mark = ","),
+    caption = "Top 3 Crop Types in Hartford County (2022)"
+  )
 ```
 
 The top three types of crop are above. Let's filter our dataframe to include only those, and eliminate extra fields we won't need now.
 
 ```{r}
-to_plot_flt <- to_plot |> 
+for_leaflet <- clean |> 
   dplyr::filter(
-    `2022` %in% c("Corn", "Grassland/Pasture", "Other Hay/Non Alfalfa")
+    `2022` %in% top_3$Crop
   ) |> 
-  dplyr::select(CSBID, `2022`, Shape_Area)
+  dplyr::select(
+    CSBID, 
+    Crop = `2022`, 
+    Shape_Area
+  ) |> 
+  # convert sq. meters to acres
+  dplyr::mutate(Shape_Area = round(Shape_Area / 4046.85642)) |> 
+  sf::st_transform(4326)
 ```
 
-We should mutate the `Shape_Area` field from square meters to square acres at this point.
+Our data prep is done -- time to make an interactive map!
 
 ```{r}
-to_plot_flt$Shape_Area <- round(to_plot_flt$Shape_Area / 4046.85642)
-```
+#| message: false
+#| warning: false
 
-Then we need to go from a **long** to a **wide** dataframe format.
+library(leaflet)
 
-```{r}
-to_plot_flt_wide <- to_plot_flt |> 
-  tidyr::pivot_wider(
-    names_from = "2022",
-    values_from = "Shape_Area"
-  ) 
-```
+# Create separate data frames for each crop for our map
+hay <- for_leaflet |> 
+  dplyr::filter(Crop == "Other Hay/Non Alfalfa")
 
-```{r}
-to_plot_flt_wide <- to_plot_flt_wide |> 
-  sf::st_transform(4326)  # ensure we have consistent CRS
-```
+grass <- for_leaflet |> 
+  dplyr::filter(Crop == "Grassland/Pasture")
 
-```{r}
-
-# Create separate dataframes for our map
-to_plot_flt_wide_hay <- to_plot_flt_wide |> 
-  dplyr::filter(`Other Hay/Non Alfalfa` > 0)
-
-to_plot_flt_wide_grass <- to_plot_flt_wide |> 
-  dplyr::filter(`Grassland/Pasture` > 0)
-
-to_plot_flt_wide_corn <- to_plot_flt_wide |> 
-  dplyr::filter(Corn > 0)
+corn <- for_leaflet |> 
+  dplyr::filter(Crop == "Corn")
 
 # Create palettes for each map
-pal.hay <- colorNumeric(
+pal_hay <- leaflet::colorNumeric(
   palette = "viridis",
-  domain = to_plot_flt_wide_hay$`Other Hay/Non Alfalfa`
+  domain = hay$Shape_Area
 )
 
-pal.grass <- colorNumeric(
+pal_grass <- leaflet::colorNumeric(
   palette = "viridis",
-  domain = to_plot_flt_wide_grass$`Grassland/Pasture`
+  domain = grass$Shape_Area
 )
 
-pal.corn <- colorNumeric(
+pal_corn <- leaflet::colorNumeric(
   palette = "viridis",
-  domain = to_plot_flt_wide_corn$Corn
+  domain = corn$Shape_Area
 )
 
-# Create html popups
-popupHay <- paste0("Crop: ", "Other Hay/Non Alfalfa", "<br>",
-                   "Acres: ", to_plot_flt_wide_hay$`Other Hay/Non Alfalfa`)
+# Create HTML popups
+popup_hay <- paste0(
+  "Crop: ", "Other Hay/Non Alfalfa", "<br>",
+  "Acres: ", hay$Shape_Area
+)
 
-popupGrass <- paste0("Crop: ", "Grassland/Pasture", "<br>",
-                     "Acres: ", to_plot_flt_wide_grass$`Grassland/Pasture`)
+popup_grass <- paste0(
+  "Crop: ", "Grassland/Pasture", "<br>",
+  "Acres: ", grass$Shape_Area
+)
 
-popupCorn <- paste0("Crop: ", "Corn", "<br>",
-                    "Acres: ", to_plot_flt_wide_corn$Corn)
+popup_corn <- paste0(
+  "Crop: ", "Corn", "<br>",
+  "Acres: ", corn$Shape_Area
+)
 
 # Put all the pieces together
-my_map  <- leaflet() |> 
-  addProviderTiles(providers$Esri.WorldTopoMap) |> 
-  addPolygons(data = to_plot_flt_wide_hay, 
-              fillColor = ~pal.hay(`Other Hay/Non Alfalfa`), 
-              color = "#b2aeae", # you need to use hex colors
-              fillOpacity = 0.8, 
-              weight = 1, 
-              smoothFactor = 0.2,
-              group = "Other Hay/Non Alfalfa",
-              popup = popupHay) |> 
-  addPolygons(data = to_plot_flt_wide_grass, 
-              fillColor = ~pal.grass(`Grassland/Pasture`), 
-              color = "#b2aeae", # you need to use hex colors
-              fillOpacity = 0.8, 
-              weight = 1, 
-              smoothFactor = 0.2,
-              group = "Grassland/Pasture",
-              popup = popupGrass) |> 
-  addPolygons(data = to_plot_flt_wide_corn, 
-              fillColor = ~pal.corn(Corn), 
-              color = "#b2aeae", # you need to use hex colors
-              fillOpacity = 0.8, 
-              weight = 1, 
-              smoothFactor = 0.2,
-              group = "Corn",
-              popup = popupCorn) |> 
- 
-  addLayersControl(
-    overlayGroups = c("Other Hay/Non Alfalfa","Grassland/Pasture", "Corn"),
-    options = layersControlOptions(collapsed = FALSE)
+my_map  <- leaflet::leaflet() |> 
+  leaflet::addProviderTiles(
+    provider = leaflet::providers$Esri.WorldTopoMap
   ) |> 
-  hideGroup(c("Grassland/Pasture", "Corn"))  |> 
-  showGroup(c("Other Hay/Non Alfalfa")) |> 
-  setView(lng = -72.552, lat = 41.992, zoom = 11)
-
+  leaflet::addPolygons(
+    data = hay, 
+    fillColor = ~pal_hay(Shape_Area), 
+    color = "#b2aeae", # you need to use hex colors
+    fillOpacity = 0.8, 
+    weight = 1, 
+    smoothFactor = 0.2,
+    group = "Other Hay/Non Alfalfa",
+    popup = popup_hay
+  ) |> 
+  leaflet::addPolygons(
+    data = grass, 
+    fillColor = ~pal_grass(Shape_Area), 
+    color = "#b2aeae", # you need to use hex colors
+    fillOpacity = 0.8, 
+    weight = 1, 
+    smoothFactor = 0.2,
+    group = "Grassland/Pasture",
+    popup = popup_grass
+  ) |> 
+  leaflet::addPolygons(
+    data = corn, 
+    fillColor = ~pal_corn(Shape_Area), 
+    color = "#b2aeae", # you need to use hex colors
+    fillOpacity = 0.8, 
+    weight = 1, 
+    smoothFactor = 0.2,
+    group = "Corn",
+    popup = popup_corn
+  ) |> 
+  leaflet::addLayersControl(
+    overlayGroups = c(
+      "Other Hay/Non Alfalfa",
+      "Grassland/Pasture",
+      "Corn"
+    ),
+    options = leaflet::layersControlOptions(collapsed = FALSE)
+  ) |> 
+  leaflet::hideGroup(c("Grassland/Pasture", "Corn"))  |> 
+  leaflet::showGroup("Other Hay/Non Alfalfa") |> 
+  leaflet::setView(lng = -72.552, lat = 41.992, zoom = 11)
 ```
 
 ::: column-page
 ```{r}
-
 my_map
 ```
 :::
