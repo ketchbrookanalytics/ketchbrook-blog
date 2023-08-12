@@ -388,31 +388,32 @@ This is interesting. Apparently they named a small brook after our consulting fi
 Now let's summarize the top crops for the last four years in the data set. The [ggcharts](https://github.com/thomas-neitmann/ggcharts) package provides nice shortcuts to making faceted bar charts that we might as well use.
 
 ```{r}
-my_bars <- to_plot |> 
+my_bars <- clean |> 
   sf::st_drop_geometry() |> 
   tidyr::pivot_longer(
-    cols = starts_with("2"),
+    cols = starts_with("20"),
     names_to = "crop_year",
     values_to = "crop"
-      ) |> 
-  dplyr::filter(crop_year >= 2019) |> 
+  ) |> 
+  dplyr::filter(
+    crop_year >= 2019,
+    crop %in% top_3$Crop   # top 3 crops in 2022
+  ) |> 
   dplyr::group_by(crop_year, crop) |> 
-  dplyr::summarise(`Total Acres` = sum(Shape_Area)) |>
-  dplyr::arrange(dplyr::desc(`Total Acres`)) |> 
-  dplyr::ungroup() |>
-  
-  ggcharts::bar_chart(
-    x = crop,
-    y = `Total Acres`,
-    facet = crop_year,
-    top_n = 5
-  ) +
-  scale_y_continuous(labels = scales::label_number(suffix = "M", scale = 1e-6)) +
-  xlab("") +
-  theme_minimal()
-  
-
-my_bars
+  dplyr::summarise(
+    `Total Acres` = round(sum(Shape_Area)),
+    .groups = "drop"
+  ) |>
+  dplyr::group_by(crop) |> 
+  # dplyr::arrange(dplyr::desc(`Total Acres`)) |> 
+  echarts4r::e_charts(x = crop_year) |> 
+  echarts4r::e_line(serie = `Total Acres`) |> 
+  echarts4r::e_title(
+    text = "Total CSB Shape Area (in Acres), by Crop and Year", 
+    subtext = "Using Top 3 Crops as of 2022"
+  ) |> 
+  echarts4r::e_legend(bottom = 0) |> 
+  echarts4r::e_tooltip(trigger = "axis")
 ```
 
 #### Slope graph
