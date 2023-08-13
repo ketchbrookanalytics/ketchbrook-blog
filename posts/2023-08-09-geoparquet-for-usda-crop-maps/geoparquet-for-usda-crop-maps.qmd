@@ -1,7 +1,7 @@
 ---
-title: "Using Geoparquet + R to dig up incredible (free) insights in the new USDA crop maps"
-author: "Ketchbrook"
-date: "Aug 4, 2023"
+title: "Analyzing New USDA Data Using Open Source Tools"
+author: "Michael Thomas"
+date: "Aug 12, 2023"
 format: 
   html:
     toc: true
@@ -54,7 +54,9 @@ Lastly, for every licensed product that Ketchbrook develops (such as our [{KAsco
 
 We know that the *geodatabase* file format that our data comes in won't work for local analysis. The CSB homepage recommends using ArcGIS to analyse the 19.5 million unique polygons within the data set, but we prefer to use open source software instead of pay-for-play tools.
 
-[Geoparquet](https://geoparquet.org/) is a newer file type that leverages the powerful Apache parquet columnar data storage format, which stores data in `.parquet` files for efficient loads, compresses well and decreases data size tremendously.\* [\* [Intro to geoparquet](https://getindata.com/blog/introducing-geoparquet-data-format/).]{.aside}
+[Geoparquet](https://geoparquet.org/) is a newer file type that leverages the powerful Apache parquet columnar data storage format, which stores data in `.parquet` files for efficient loads, compresses well and decreases data size tremendously.[^4]
+
+[^4]: [This link](https://getindata.com/blog/introducing-geoparquet-data-format/) contains a helpful intro to the geoparquet format.
 
 The goal of the **Geoparquet** project is for `.parquet` to become the new standard file format in the geospatial world, replacing the *shapefile*.
 
@@ -135,9 +137,9 @@ bucket$ls(path = "year=2022", recursive = TRUE) |>
 
 Now that we've established a connection to our optimized *.parquet* files stored in the cloud, we should discuss best practices for working with these types of files.
 
-First, let's get *lazy* (in the good way). When we combine the underlying Arrow specification behind Parquet with R's [dplyr](https://dplyr.tidyverse.org/) functions, we can take advantage of *lazy evaluation*. Lazy evaluation simply means that we build a *recipe* of what we want to do with the data set, but we only apply the recipe when we are ready to bring the *transformed* data into memory. In other words, we can filter our data set (on *disk*) by state, county, acreage, etc., before bringing it into our R environment.
+First, let's get *lazy* (in the good way). When we combine the underlying Arrow specification behind Parquet with R's [dplyr](https://dplyr.tidyverse.org/) functions, we can take advantage of *lazy evaluation*[^3]. Lazy evaluation simply means that we build a *recipe* of what we want to do with the data set, but we only apply the recipe when we are ready to bring the *transformed* data into memory. In other words, we can filter our data set (on *disk*) by state, county, acreage, etc., before bringing it into our R environment.
 
-For our purposes, we will analyze a small portion of the total United States, so this lazy evaluation will give us tremendous speed gainz. \* [\* [For more information on Parquet and lazy evaluation, see our guest post on the Posit blog](https://posit.co/blog/shiny-and-arrow/).]{.aside}
+[^3]: For more information on Parquet and lazy evaluation, see our guest post on the [Posit blog](https://posit.co/blog/shiny-and-arrow/).]
 
 ## Data Preparation
 
@@ -164,9 +166,12 @@ dplyr::glimpse(raw)
 
 It looks like there is a unique identifier for each field `CSBID`, we have what appear to be crop codes for a given year for that field `R15 … R22`, and we have some additional fields that describe the polygon. The crop *codes* aren't particularly useful to us; We need to find out which crop each of those codes actually represents (i.e., we need a lookup table).
 
-Unfortunately, the crop codes metadata is stored in an [ugly XML file](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/metadata_Crop-Sequence-Boundaries-2022.htm), but our team took the time to create a crop codes lookup table in .csv format for your convenience. \* [\* [Crop Codes Lookup Table](https://github.com/ketchbrookanalytics/usda-csb-data/blob/main/data/crop_types.csv).]{.aside}
+Unfortunately, the crop codes metadata is stored in an [ugly XML file](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/metadata_Crop-Sequence-Boundaries-2022.htm), but our team took the time to create a [crop codes lookup table in .csv format](https://github.com/ketchbrookanalytics/usda-csb-data/blob/main/data/crop_types.csv) for your convenience.
 
 ```{r}
+#| message: false
+#| warning: false
+
 library(knitr)
 
 # Read in the crop codes lookup table
@@ -228,6 +233,8 @@ Perhaps you know that the [{ggplot2} library]() is great for developing static c
 
 ```{r}
 #| fig.height: 10
+#| message: false
+#| warning: false
 
 library(ggplot2)
 
@@ -383,6 +390,9 @@ leaflet::leaflet() |>
 Maybe we don't care as much about the geometries within the data, but are more interested in the finding trends over time. For example, we could summarize the top five crops for the last four years in the data set. The [ggcharts](https://github.com/thomas-neitmann/ggcharts) package provides nice shortcuts to making faceted bar charts that we might as well use.
 
 ```{r}
+#| message: false
+#| warning: false
+
 library(tidyr)
 
 clean |> 
@@ -458,5 +468,3 @@ Lastly, here are some other additional links that you may find helpful in your j
 * The [USDA NASS Quickstats](https://quickstats.nass.usda.gov/) database lets you query survey and census data related to agriculture. If you'd like to query this data from R, the [{tidyUSDA}](https://bradlindblad.github.io/tidyUSDA/) R package allows you to do just that, in addition to having built-in plotting functionality:
 
 ![Plotting with tidyUSDA R package](tidyusda_map.png){fig-align="center"}
-
-
