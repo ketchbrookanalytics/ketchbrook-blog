@@ -50,7 +50,7 @@ To further level-set, the audience for this post is:
 
 Lastly, for every licensed product that Ketchbrook develops (such as our [{KAscore} R package](https://ketchbrookanalytics.github.io/KAscore/)), we aim to provide one open source solution (such as our [{migrate} R package](https://github.com/mthomas-ketchbrook/migrate), or this open CSB data)
 
-## From geodatabase to geoparquet
+## Migrating to Parquet
 
 We know that the *geodatabase* file format that our data comes in won't work for local analysis. The CSB homepage recommends using ArcGIS to analyse the 19.5 million unique polygons within the data set, but we prefer to use open source software instead of pay-for-play tools.
 
@@ -131,7 +131,7 @@ bucket$ls(path = "year=2022", recursive = TRUE) |>
     head()
 ```
 
-## When Lazy Becomes Efficient
+### When Lazy Becomes Efficient
 
 Now that we've established a connection to our optimized *.parquet* files stored in the cloud, we should discuss best practices for working with these types of files.
 
@@ -139,9 +139,11 @@ First, let's get *lazy* (in the good way). When we combine the underlying Arrow 
 
 For our purposes, we will analyze a small portion of the total United States, so this lazy evaluation will give us tremendous speed gainz. \* [\* [For more information on Parquet and lazy evaluation, see our guest post on the Posit blog](https://posit.co/blog/shiny-and-arrow/).]{.aside}
 
-### Data Preparation
+## Data Preparation
 
-Let's take our first peek at the data to see what we're dealing with. Note that the [sfarrow](https://github.com/wcjochem/sfarrow) package lets us parse our Parquet data directly into the popular geospatial [sf](https://r-spatial.github.io/sf/) object format. This will help us build maps and perform geospatial calculations downstream.
+Let's take our first peek at the data to see what we're dealing with. However, instead of pulling in *all* of the data from the s3 bucket, let's only pull in data from Hartford County, Connecticut.
+
+Note that the [sfarrow](https://github.com/wcjochem/sfarrow) package lets us parse our Parquet data directly into the popular geospatial [sf](https://r-spatial.github.io/sf/) object format. This will help us build maps and perform geospatial calculations downstream.
 
 ```{r}
 #| message: false
@@ -160,11 +162,13 @@ raw <- arrow::open_dataset(bucket) |>
 dplyr::glimpse(raw)
 ```
 
-So we a unique identifier for each field `CSBID`, we have what appear to be crop codes for a given year for that field `R15 … R22`, and we have some additional fields that describe the polygon. The crop *codes* aren't particularly useful to us; We need to find out which crop each of those codes actually represents (i.e., we need a lookup table).
+It looks like there is a unique identifier for each field `CSBID`, we have what appear to be crop codes for a given year for that field `R15 … R22`, and we have some additional fields that describe the polygon. The crop *codes* aren't particularly useful to us; We need to find out which crop each of those codes actually represents (i.e., we need a lookup table).
 
 Unfortunately, the crop codes metadata is stored in an [ugly XML file](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/metadata_Crop-Sequence-Boundaries-2022.htm), but our team took the time to create a crop codes lookup table in .csv format for your convenience. \* [\* [Crop Codes Lookup Table](https://github.com/ketchbrookanalytics/usda-csb-data/blob/main/data/crop_types.csv).]{.aside}
 
 ```{r}
+library(knitr)
+
 # Read in the crop codes lookup table
 lookup <- read.csv(
   file = "https://raw.githubusercontent.com/ketchbrookanalytics/usda-csb-data/main/data/crop_types.csv",
@@ -199,7 +203,7 @@ clean <- raw |>
   ) |> 
   # Rename the "R*" columns to the full year
   dplyr::rename_with(
-    .fn = function(x) gsub("R", "20", x),
+    .fn = function(x) stringr::str_replace(x, "R", "20"),
     .cols = tidyselect::matches("R[0-9][0-9]")
   )
 ```
@@ -214,12 +218,18 @@ clean |>
   knitr::kable()
 ```
 
-Now we're dangerous. First let's do some basic plotting to make sure it looks right.
+## Data Visualization
 
-## Static Maps
+Once we've calculated some summary statistics about our data and developed a few tables, a logical next step might be to start visualizing the data in a map or chart. We can employ some static and interactive maps and charts to help us gain a better understanding of the crop service boundary data.
+
+### Static Maps
+
+Perhaps you know that the [{ggplot2} library]() is great for developing static charts, but did you know it can produce beautiful maps, too? Here's a chart showing the crop type in each individual geometry (i.e., crop service boundary) in Hartford County, Connecticut.
 
 ```{r}
 #| fig.height: 10
+
+library(ggplot2)
 
 clean |> 
   ggplot2::ggplot(
@@ -227,7 +237,8 @@ clean |>
   ) + 
   ggplot2::geom_sf() + 
   ggplot2::labs(
-    title = "Crop Cover Map (2022)"
+    title = "Crop Cover Map (2022)",
+    subtitle = "Hartford County, Connecticut"
   ) +
   ggplot2::theme(
     legend.position = "top",
@@ -235,11 +246,9 @@ clean |>
   )
 ```
 
-This looks good. We plotted all the crop fields found in Hartford County, Connecticut in 2022.
+### Interactive Maps
 
-## Interactive Maps
-
-[Leaflet](https://rstudio.github.io/leaflet/) maps are handy for interactive visualization that we can embed in any HTML document or webpage. But before we make the map, let's find out which crops are most prevalent in Hartford County so we don't overplot.
+While {ggplot2} is great for static visuals, [{leaflet}](https://rstudio.github.io/leaflet/) maps are handy for *interactive* visualizations that can be embed in any HTML document or webpage. But before we make a {leaflet} map, let's find out which crops are most prevalent in Hartford County.
 
 ```{r}
 top_3 <- clean |> 
@@ -279,7 +288,7 @@ Our data prep is done -- time to make an interactive map!
 
 library(leaflet)
 
-# Create separate data frames for each crop for our map
+# Create separate data frames for each layer (crop) for our map
 hay <- for_leaflet |> 
   dplyr::filter(Crop == "Other Hay/Non Alfalfa")
 
@@ -321,8 +330,8 @@ popup_corn <- paste0(
   "Acres: ", corn$Shape_Area
 )
 
-# Put all the pieces together
-my_map  <- leaflet::leaflet() |> 
+# Create the leaflet map
+leaflet::leaflet() |> 
   leaflet::addProviderTiles(
     provider = leaflet::providers$Esri.WorldTopoMap
   ) |> 
@@ -369,21 +378,13 @@ my_map  <- leaflet::leaflet() |>
   leaflet::setView(lng = -72.552, lat = 41.992, zoom = 11)
 ```
 
-::: column-page
-```{r}
-my_map
-```
-:::
+### Faceted Bar Charts
 
-This is interesting. Apparently they named a small brook after our consulting firm:
-
-![](street_view.png){fig-align="center"}
-
-## Faceted Bar Charts
-
-Now let's summarize the top five crops for the last four years in the data set. The [ggcharts](https://github.com/thomas-neitmann/ggcharts) package provides nice shortcuts to making faceted bar charts that we might as well use.
+Maybe we don't care as much about the geometries within the data, but are more interested in the finding trends over time. For example, we could summarize the top five crops for the last four years in the data set. The [ggcharts](https://github.com/thomas-neitmann/ggcharts) package provides nice shortcuts to making faceted bar charts that we might as well use.
 
 ```{r}
+library(tidyr)
+
 clean |> 
   sf::st_drop_geometry() |> 
   tidyr::pivot_longer(
@@ -433,7 +434,7 @@ clean |>
 
 ## What's Next?
 
-So now that you now this data exists and have a starting point for analyzing it, where can you go from here?
+So now that you know this data exists, where can you go from here?
 
 ### Use our geoparquet!
 
