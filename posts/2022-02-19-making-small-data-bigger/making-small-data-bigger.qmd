@@ -4,9 +4,8 @@ description: "Don't let your model choice shrink your data."
 author: Michael Thomas
 date: 2022-02-19
 draft: false
-iamge: preview.jpeg
+image: preview.jpeg
 ---
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
