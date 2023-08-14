@@ -461,6 +461,7 @@ Imagine you have another geospatial dataset containing locations of the fields (
 
 Lastly, here are some other additional links that you may find helpful in your journey while analyzing the CSB data:
 
+* The [GitHub repository developed by USDA to create the original CSB data](https://github.com/USDA-REE-NASS/crop-sequence-boundaries/tree/main/csb-project) is publicly available
 * The [USDA NASS Quickstats](https://quickstats.nass.usda.gov/) database lets you query survey and census data related to agriculture. If you'd like to query this data from R, the [{tidyUSDA}](https://bradlindblad.github.io/tidyUSDA/) R package allows you to do just that, in addition to having built-in plotting functionality:
 
 ![Plotting with tidyUSDA R package](tidyusda_map.png){fig-align="center"}
