@@ -86,7 +86,7 @@ for r in range(0, 100):
         row_end = (r + 2) * 1000000
 ```
 
-The last step involved reading in the new *.parquet* files and re-writing them out (to .parquet format again), this time partitioned by state, instead of by an arbitrary number of rows. By partitioning (i.e., creating separate .parquet files for each *"partition"*) the data this way, we can reap huge performance gains when reading the data into memory. Also, we imagine that end users of this data will likely be interested in analyzing crop service boundaries for a few particular states. Partitioning the data by state will lead to additional performance improvements, since only the .parquet files for the state(s) of interest will need to be computed on. We decided to switch to R for this step (and for the rest of the analysis).
+The last step involved reading in the new *.parquet* files and re-writing them out (to .parquet format again), this time partitioned by state, instead of by an arbitrary number of rows. By partitioning (i.e., creating separate .parquet files for each *"partition"*) the data this way, we can reap huge performance gains when reading the data into memory. Also, we imagine that end users of this data will likely be interested in analyzing crop sequence boundaries for a few particular states. Partitioning the data by state will lead to additional performance improvements, since only the .parquet files for the state(s) of interest will need to be computed on. We decided to switch to R for this step (and for the rest of the analysis).
 
 ```{r}
 #| eval: false
@@ -133,7 +133,7 @@ Before actually *reading* in the data from the s3 bucket, we should first discus
 
 First, let's get *lazy* (in the good way). When we combine the underlying Arrow specification behind Parquet with R's [dplyr](https://dplyr.tidyverse.org/) functions, we can take advantage of *lazy evaluation*[^3]. Lazy evaluation simply means that we build a *recipe* of what we want to do with the data set, but we only apply the recipe when we are ready to bring the *transformed* data into memory. In other words, we can filter our data set (on *disk*) by state, county, acreage, etc., before bringing it into our R environment.
 
-[^3]: For more information on Parquet and lazy evaluation, see our guest post on the [Posit blog](https://posit.co/blog/shiny-and-arrow/).]
+[^3]: For more information on Parquet and lazy evaluation, see our guest post on the [Posit blog](https://posit.co/blog/shiny-and-arrow/).
 
 ## Data Preparation
 
@@ -158,7 +158,7 @@ raw <- arrow::open_dataset(bucket) |>
 dplyr::glimpse(raw)
 ```
 
-In looking through the list of columns and first few rows of data in each column, it appears that there is a unique identifier for each field (`CSBID`), crop codes for a given year for that field (`R15 … R22`), and additional fields that describe the polygon (i.e., crop service boundary). The crop *codes* aren't particularly useful to us; instead, we need to find out which actual crop each of those codes actually represents (i.e., we need a look-up table).
+In looking through the list of columns and first few rows of data in each column, it appears that there is a unique identifier for each field (`CSBID`), crop codes for a given year for that field (`R15 … R22`), and additional fields that describe the polygon (i.e., crop sequence boundary). The crop *codes* aren't particularly useful to us; instead, we need to find out which actual crop each of those codes actually represents (i.e., we need a look-up table).
 
 Unfortunately, the crop codes metadata is stored in an [ugly XML file](https://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/metadata_Crop-Sequence-Boundaries-2022.htm), but our team took the time to create a [crop codes lookup table in .csv format](https://github.com/ketchbrookanalytics/usda-csb-data/blob/main/data/crop_types.csv) for your convenience.
 
@@ -207,7 +207,7 @@ clean <- raw |>
   )
 ```
 
-We can take a look at how the crop cover changed for a few individual geometries (crop service boundaries) between 2020 and 2022.
+We can take a look at how the crop cover changed for a few individual geometries (crop sequence boundaries) between 2020 and 2022.
 
 ```{r}
 clean |> 
@@ -219,11 +219,11 @@ clean |>
 
 ## Data Visualization
 
-Once we've calculated some summary statistics about our data and developed a few tables, a logical next step might be to start visualizing the data in a map or chart. We can employ some static and interactive maps and charts to help us gain a better understanding of the crop service boundary data.
+Once we've calculated some summary statistics about our data and developed a few tables, a logical next step might be to start visualizing the data in a map or chart. We can employ some static and interactive maps and charts to help us gain a better understanding of the crop sequence boundary data.
 
 ### Static Maps
 
-Perhaps you know that the [{ggplot2} library](https://ggplot2.tidyverse.org/) is great for developing static charts, but did you know it can produce beautiful maps, too? Here's a chart showing the crop type in each individual geometry (i.e., crop service boundary) in Hartford County, Connecticut.
+Perhaps you know that the [{ggplot2} library](https://ggplot2.tidyverse.org/) is great for developing static charts, but did you know it can produce beautiful maps, too? Here's a chart showing the crop type in each individual geometry (i.e., crop sequence boundary) in Hartford County, Connecticut.
 
 ```{r}
 #| fig.height: 10
