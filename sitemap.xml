@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://ketchbrookanalytics.github.io/ketchbrook-blog/about.html</loc>
-    <lastmod>2026-02-17T18:17:03.064Z</lastmod>
+    <loc>https://blog.ketchbrookanalytics.com/about.html</loc>
+    <lastmod>2026-02-17T19:21:55.794Z</lastmod>
   </url>
   <url>
-    <loc>https://ketchbrookanalytics.github.io/ketchbrook-blog/posts/2026-02-16-taming-text-to-sql/taming-text-to-sql.html</loc>
-    <lastmod>2026-02-17T18:17:03.110Z</lastmod>
+    <loc>https://blog.ketchbrookanalytics.com/posts/2026-02-16-taming-text-to-sql/taming-text-to-sql.html</loc>
+    <lastmod>2026-02-17T19:21:55.843Z</lastmod>
   </url>
   <url>
-    <loc>https://ketchbrookanalytics.github.io/ketchbrook-blog/posts/2022-02-19-making-small-data-bigger/making-small-data-bigger.html</loc>
-    <lastmod>2026-02-17T18:17:03.064Z</lastmod>
+    <loc>https://blog.ketchbrookanalytics.com/posts/2022-02-19-making-small-data-bigger/making-small-data-bigger.html</loc>
+    <lastmod>2026-02-17T19:21:55.795Z</lastmod>
   </url>
   <url>
-    <loc>https://ketchbrookanalytics.github.io/ketchbrook-blog/index.html</loc>
-    <lastmod>2026-02-17T18:17:03.064Z</lastmod>
+    <loc>https://blog.ketchbrookanalytics.com/index.html</loc>
+    <lastmod>2026-02-17T19:21:55.794Z</lastmod>
   </url>
   <url>
-    <loc>https://ketchbrookanalytics.github.io/ketchbrook-blog/posts/2023-08-09-geoparquet-for-usda-crop-maps/geoparquet-for-usda-crop-maps.html</loc>
-    <lastmod>2026-02-17T18:17:03.072Z</lastmod>
+    <loc>https://blog.ketchbrookanalytics.com/posts/2023-08-09-geoparquet-for-usda-crop-maps/geoparquet-for-usda-crop-maps.html</loc>
+    <lastmod>2026-02-17T19:21:55.803Z</lastmod>
   </url>
   <url>
-    <loc>https://ketchbrookanalytics.github.io/ketchbrook-blog/posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html</loc>
-    <lastmod>2026-02-17T18:17:03.070Z</lastmod>
+    <loc>https://blog.ketchbrookanalytics.com/posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html</loc>
+    <lastmod>2026-02-17T19:21:55.800Z</lastmod>
   </url>
 </urlset>

@@ -1,1 +1,1 @@
-Sitemap: https://ketchbrookanalytics.github.io/ketchbrook-blog/sitemap.xml
+Sitemap: https://blog.ketchbrookanalytics.com/sitemap.xml
