@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Don’t be a stranger – we would love to hear from you!\nGet in touch with us at info@ketchbrookanalytics.com today."
+  },
+  {
     "objectID": "posts/2026-02-16-taming-text-to-sql/taming-text-to-sql.html",
     "href": "posts/2026-02-16-taming-text-to-sql/taming-text-to-sql.html",
     "title": "Taming Text-to-SQL",
@@ -91,48 +98,6 @@
     "text": "The power of LLMs\nLLMs are constantly getting better, including improved ability to handle a wider range of tasks. Most notable current changes are involving Agents, which give LLMs the power to do stuff more than only respond with text/images/instructions.\nIncorporating LLMs into products and services can generate big rewards and streamline many processes, but not everything should be solved with them. Be conscientious but incorporate them if you can do so in a way that provides value. We believe this is only the beginning!"
   },
   {
-    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html",
-    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html",
-    "title": "Estimating Probability of Default in Real-Time",
-    "section": "",
-    "text": "In our last blog post, we discussed some high-level strategies for getting more of your data into your model. This week we are going to dive deeper into the benefits of credit risk modeling frameworks that go beyond the “traditional” (linear/logistic regression, decision trees, etc.) approaches."
-  },
-  {
-    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#making-risk-more-dynamic",
-    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#making-risk-more-dynamic",
-    "title": "Estimating Probability of Default in Real-Time",
-    "section": "Making Risk More Dynamic",
-    "text": "Making Risk More Dynamic\nLet’s envision a world where, instead of disparate models that assess probability of default at the time of certain credit events (i.e., one model for origination, another model for renewal, a third for CECL, etc.), we have a single model that estimates PD in real-time.\nThis world is not just possible – it’s a framework that Ketchbrook Analytics has spent years developing and building out for our banking clients.\nThe value proposition for this framework includes greater flexibility, decreased risk and improved insights. The technical details of the modeling approach allow any organization to:\n\nincorporate new information (new repayment data, new economic outlook data, etc.) about a loan to continuously update it’s predicted probability of default\nlook at its portfolio on any given day and understand the current risk for a single loan, a segment of loans, or the entire portfolio\nsimulate the impact of a new deal on the portfolio during the underwriting process\n\nFrom a modeling perspective, this means that we want our inputs (predictors) to be the longitudinal attributes about the loan, and the model output to be probability of default.\n\nWith each additional on-time payment, we would expect our model to decrease the associated probability of default. Conversely, if new economic outlook data forecasts worsening industry conditions, the model should update the probability of default to show increasing risk."
-  },
-  {
-    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#taking-a-forward-looking-approach",
-    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#taking-a-forward-looking-approach",
-    "title": "Estimating Probability of Default in Real-Time",
-    "section": "Taking a Forward-Looking Approach",
-    "text": "Taking a Forward-Looking Approach\nEven more specifically, our model’s output should not be a single number – it should instead be a curve that provides us with not just a predicted probability of default, but a probability of default over the life of the loan.\nTake Loan #1234, for example. This five-year term loan just came into our bank today and passed through our model, which returned the following probability of default curve prediction:\n\n\n\n\n\n\n[Tip: You can hover over the chart above – it’s interactive! Each point represents the probability of the loan defaulting at or before that date. If we want to know the probability of a specific loan (including a new loan, a renewal, or a group of existing loans in a portfolio) defaulting today, we can easily get this by looking at the left-most point on the PD curve(s). If we want to know the probability of a loan ever defaulting during its life, we can easily get this by looking at the right-most point.]\nOur model estimates that Loan #1234 has a 0.8% probability of defaulting sometime prior to the end of this year (2022), a 2.0% probability of defaulting between now and the end of 2023, and so on, with a 16.0% probability of defaulting during its life.\nFast-forward two years later, and Loan #1234 has not yet defaulted, with three years remaining on its five-year term. We have new information about this loan’s performance that we did not have at origination (e.g., repayment history), as well as updated information (e.g., industry outlook). Running it through our model again, the curve has likely changed:\n\n\n\n\n\n\nIn the case of Loan #1234, it looks like it has been performing pretty well, since the updated probability of defaulting before term is down from 16.0% to 7.2%.\n\nOne Model to Rule Them All\nIn our toy example, we used an annual frequency along the x-axis of our charts. In practice, this frequency would be much more granular – at least monthly, and hopefully daily. Remember, the time granularity of our model’s output is tied directly to the frequency of the input data. In other words, if we get new repayment & economic outlook data each month, then (1) our model will output a predicted probability of default for each month into the future, and (2) that prediction curve can be updated each month.\n\nFrom a practical perspective, having a modeling framework that provides probability of default estimates in real-time (including origination) that updates dynamically as we get new information allows us to quickly build automated loan decisioning, scorecard lending, CECL, and stress testing models along the same probability of default framework."
-  },
-  {
-    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#interested-in-learning-more",
-    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#interested-in-learning-more",
-    "title": "Estimating Probability of Default in Real-Time",
-    "section": "Interested in Learning More?",
-    "text": "Interested in Learning More?\nGet in touch with us today at info@ketchbrookanalytics.com"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "The Latest in Data Science",
-    "section": "",
-    "text": "Taming Text-to-SQL\n\n\nHow we leveraged LLMs to bridge the gap between users and data.\n\n\n\n\n\nFeb 16, 2026\n\n\nFranco Ferrero\n\n\n\n\n\n\n\n\n\n\n\n\nAnalyzing New USDA Data Using Open Source Tools\n\n\nAnd how the Parquet file format can help.\n\n\n\n\n\nAug 13, 2023\n\n\nMichael Thomas\n\n\n\n\n\n\n\n\n\n\n\n\nEstimating Probability of Default in Real-Time\n\n\nAnd the many benefits of a forward-looking approach.\n\n\n\n\n\nMar 21, 2022\n\n\nMichael Thomas\n\n\n\n\n\n\n\n\n\n\n\n\nMaking Small Data Big(ger)\n\n\nDon’t let your model choice shrink your data.\n\n\n\n\n\nFeb 19, 2022\n\n\nMichael Thomas\n\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "Don’t be a stranger – we would love to hear from you!\nGet in touch with us at info@ketchbrookanalytics.com today."
-  },
-  {
     "objectID": "posts/2022-02-19-making-small-data-bigger/making-small-data-bigger.html",
     "href": "posts/2022-02-19-making-small-data-bigger/making-small-data-bigger.html",
     "title": "Making Small Data Big(ger)",
@@ -159,6 +124,13 @@
     "title": "Making Small Data Big(ger)",
     "section": "Interested in Learning More?",
     "text": "Interested in Learning More?\nGet in touch with us today at info@ketchbrookanalytics.com"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "The Latest in Data Science",
+    "section": "",
+    "text": "Taming Text-to-SQL\n\n\nHow we leveraged LLMs to bridge the gap between users and data.\n\n\n\n\n\nFeb 16, 2026\n\n\nFranco Ferrero\n\n\n\n\n\n\n\n\n\n\n\n\nAnalyzing New USDA Data Using Open Source Tools\n\n\nAnd how the Parquet file format can help.\n\n\n\n\n\nAug 13, 2023\n\n\nMichael Thomas\n\n\n\n\n\n\n\n\n\n\n\n\nEstimating Probability of Default in Real-Time\n\n\nAnd the many benefits of a forward-looking approach.\n\n\n\n\n\nMar 21, 2022\n\n\nMichael Thomas\n\n\n\n\n\n\n\n\n\n\n\n\nMaking Small Data Big(ger)\n\n\nDon’t let your model choice shrink your data.\n\n\n\n\n\nFeb 19, 2022\n\n\nMichael Thomas\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/2023-08-09-geoparquet-for-usda-crop-maps/geoparquet-for-usda-crop-maps.html#a-big-data-release-from-the-usda",
@@ -208,5 +180,33 @@
     "title": "Analyzing New USDA Data Using Open Source Tools",
     "section": "Footnotes",
     "text": "Footnotes\n\n\nWe did successfully read the CSB data into QGIS without any blue screens, but this post is aimed at the R and Python crowd↩︎\nhttps://www.nass.usda.gov/Research_and_Science/Crop-Sequence-Boundaries/↩︎\nThis link contains a helpful intro to the geoparquet format.↩︎\nFor more information on Parquet and lazy evaluation, see our guest post on the Posit blog.↩︎"
+  },
+  {
+    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html",
+    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html",
+    "title": "Estimating Probability of Default in Real-Time",
+    "section": "",
+    "text": "In our last blog post, we discussed some high-level strategies for getting more of your data into your model. This week we are going to dive deeper into the benefits of credit risk modeling frameworks that go beyond the “traditional” (linear/logistic regression, decision trees, etc.) approaches."
+  },
+  {
+    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#making-risk-more-dynamic",
+    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#making-risk-more-dynamic",
+    "title": "Estimating Probability of Default in Real-Time",
+    "section": "Making Risk More Dynamic",
+    "text": "Making Risk More Dynamic\nLet’s envision a world where, instead of disparate models that assess probability of default at the time of certain credit events (i.e., one model for origination, another model for renewal, a third for CECL, etc.), we have a single model that estimates PD in real-time.\nThis world is not just possible – it’s a framework that Ketchbrook Analytics has spent years developing and building out for our banking clients.\nThe value proposition for this framework includes greater flexibility, decreased risk and improved insights. The technical details of the modeling approach allow any organization to:\n\nincorporate new information (new repayment data, new economic outlook data, etc.) about a loan to continuously update it’s predicted probability of default\nlook at its portfolio on any given day and understand the current risk for a single loan, a segment of loans, or the entire portfolio\nsimulate the impact of a new deal on the portfolio during the underwriting process\n\nFrom a modeling perspective, this means that we want our inputs (predictors) to be the longitudinal attributes about the loan, and the model output to be probability of default.\n\nWith each additional on-time payment, we would expect our model to decrease the associated probability of default. Conversely, if new economic outlook data forecasts worsening industry conditions, the model should update the probability of default to show increasing risk."
+  },
+  {
+    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#taking-a-forward-looking-approach",
+    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#taking-a-forward-looking-approach",
+    "title": "Estimating Probability of Default in Real-Time",
+    "section": "Taking a Forward-Looking Approach",
+    "text": "Taking a Forward-Looking Approach\nEven more specifically, our model’s output should not be a single number – it should instead be a curve that provides us with not just a predicted probability of default, but a probability of default over the life of the loan.\nTake Loan #1234, for example. This five-year term loan just came into our bank today and passed through our model, which returned the following probability of default curve prediction:\n\n\n\n\n\n\n[Tip: You can hover over the chart above – it’s interactive! Each point represents the probability of the loan defaulting at or before that date. If we want to know the probability of a specific loan (including a new loan, a renewal, or a group of existing loans in a portfolio) defaulting today, we can easily get this by looking at the left-most point on the PD curve(s). If we want to know the probability of a loan ever defaulting during its life, we can easily get this by looking at the right-most point.]\nOur model estimates that Loan #1234 has a 0.8% probability of defaulting sometime prior to the end of this year (2022), a 2.0% probability of defaulting between now and the end of 2023, and so on, with a 16.0% probability of defaulting during its life.\nFast-forward two years later, and Loan #1234 has not yet defaulted, with three years remaining on its five-year term. We have new information about this loan’s performance that we did not have at origination (e.g., repayment history), as well as updated information (e.g., industry outlook). Running it through our model again, the curve has likely changed:\n\n\n\n\n\n\nIn the case of Loan #1234, it looks like it has been performing pretty well, since the updated probability of defaulting before term is down from 16.0% to 7.2%.\n\nOne Model to Rule Them All\nIn our toy example, we used an annual frequency along the x-axis of our charts. In practice, this frequency would be much more granular – at least monthly, and hopefully daily. Remember, the time granularity of our model’s output is tied directly to the frequency of the input data. In other words, if we get new repayment & economic outlook data each month, then (1) our model will output a predicted probability of default for each month into the future, and (2) that prediction curve can be updated each month.\n\nFrom a practical perspective, having a modeling framework that provides probability of default estimates in real-time (including origination) that updates dynamically as we get new information allows us to quickly build automated loan decisioning, scorecard lending, CECL, and stress testing models along the same probability of default framework."
+  },
+  {
+    "objectID": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#interested-in-learning-more",
+    "href": "posts/2022-03-21-estimating-probability-of-default-in-real-time/estimating-probability-of-default-in-real-time.html#interested-in-learning-more",
+    "title": "Estimating Probability of Default in Real-Time",
+    "section": "Interested in Learning More?",
+    "text": "Interested in Learning More?\nGet in touch with us today at info@ketchbrookanalytics.com"
   }
 ]
