@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.8.27">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
 <meta name="author" content="Michael Thomas">
 <meta name="dcterms.date" content="2022-03-21">
 <meta name="description" content="And the many benefits of a forward-looking approach.">
-
 <title>Estimating Probability of Default in Real-Time – Ketchbrook Analytics Blog</title>
 <style>
 code{white-space: pre-wrap;}
@@ -24,7 +21,6 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 </style>
-
 
 <script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
@@ -44,8 +40,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dcd6dad1d9027e0fc018a6aab5a8b21b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-9099669265fe583b2fd0ede870bd04aa.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+<link href="../../site_libs/bootstrap/bootstrap-9099669265fe583b2fd0ede870bd04aa.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -71,23 +66,12 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<script src="../../site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
-<script src="../../site_libs/echarts4r-4.8.0/echarts-en.min.js"></script>
-<script src="../../site_libs/echarts4r-4.8.0/ecStat.min.js"></script>
-<script src="../../site_libs/echarts4r-4.8.0/dataTool.min.js"></script>
-<script src="../../site_libs/echarts4r-binding-0.4.4/echarts4r.js"></script>
-
-
-<link rel="stylesheet" href="../../styles.css">
+}</script><script src="../../site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script><script src="../../site_libs/echarts4r-4.8.0/echarts-en.min.js"></script><script src="../../site_libs/echarts4r-4.8.0/ecStat.min.js"></script><script src="../../site_libs/echarts4r-4.8.0/dataTool.min.js"></script><script src="../../site_libs/echarts4r-binding-0.4.4/echarts4r.js"></script><link rel="stylesheet" href="../../styles.css">
 </head>
-
 <body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
-      <div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Ketchbrook Analytics Blog</span>
@@ -99,7 +83,7 @@ ul.task-list li input[type="checkbox"] {
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
+<li class="nav-item">
     <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
@@ -114,15 +98,11 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text"></span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
+</div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
-    </nav>
-</header>
-<!-- content -->
-<header id="title-block-header" class="quarto-title-block default page-columns page-full">
-  <div class="quarto-title-banner page-columns page-full">
+    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">Estimating Probability of Default in Real-Time</h1>
                   <div>
@@ -159,15 +139,8 @@ ul.task-list li input[type="checkbox"] {
 <!-- margin-sidebar -->
     
 <!-- main -->
-<main class="content quarto-banner-title-block" id="quarto-document-content">
-
-
-
-
-
-<p>In our last blog post, we discussed some high-level strategies for <a href="https://blog.ketchbrookanalytics.com/posts/2022-02-19-making-small-data-bigger/">getting more of your data into your model</a>. This week we are going to dive deeper into the benefits of credit risk modeling frameworks that go beyond the “traditional” (linear/logistic regression, decision trees, etc.) approaches.</p>
-<section id="making-risk-more-dynamic" class="level2">
-<h2 class="anchored" data-anchor-id="making-risk-more-dynamic">Making Risk More Dynamic</h2>
+<main class="content quarto-banner-title-block" id="quarto-document-content"><p>In our last blog post, we discussed some high-level strategies for <a href="https://blog.ketchbrookanalytics.com/posts/2022-02-19-making-small-data-bigger/">getting more of your data into your model</a>. This week we are going to dive deeper into the benefits of credit risk modeling frameworks that go beyond the “traditional” (linear/logistic regression, decision trees, etc.) approaches.</p>
+<section id="making-risk-more-dynamic" class="level2"><h2 class="anchored" data-anchor-id="making-risk-more-dynamic">Making Risk More Dynamic</h2>
 <p>Let’s envision a world where, instead of disparate models that assess probability of default at the time of certain credit events (i.e., one model for origination, another model for renewal, a third for <a href="https://www.occ.treas.gov/topics/supervision-and-examination/bank-operations/accounting/current-expected-credit-losses/index-current-expected-credit-losses.html">CECL</a>, etc.), we have a <em>single</em> model that estimates PD in <em>real-time</em>.</p>
 <p>This world is not just possible – it’s a framework that Ketchbrook Analytics has spent years developing and building out for our banking clients.</p>
 <p>The <strong>value proposition</strong> for this framework includes <em>greater flexibility</em>, <em>decreased risk</em> and <em>improved insights</em>. The <strong>technical details</strong> of the modeling approach allow any organization to:</p>
@@ -179,9 +152,7 @@ ul.task-list li input[type="checkbox"] {
 <p>From a modeling perspective, this means that we want our inputs (predictors) to be the <a href="https://blog.ketchbrookanalytics.com/posts/2022-02-19-making-small-data-bigger#aggregation-is-limiting">longitudinal attributes</a> about the loan, and the model output to be probability of default.</p>
 <p><img src="inputs_outputs.PNG" class="img-fluid"></p>
 <p>With each additional on-time payment, we would expect our model to decrease the associated probability of default. Conversely, if new economic outlook data forecasts worsening industry conditions, the model should update the probability of default to show increasing risk.</p>
-</section>
-<section id="taking-a-forward-looking-approach" class="level2">
-<h2 class="anchored" data-anchor-id="taking-a-forward-looking-approach">Taking a Forward-Looking Approach</h2>
+</section><section id="taking-a-forward-looking-approach" class="level2"><h2 class="anchored" data-anchor-id="taking-a-forward-looking-approach">Taking a Forward-Looking Approach</h2>
 <p>Even more specifically, our model’s output should not be a single number – it should instead be a <em>curve</em> that provides us with not just a predicted probability of default, but a probability of default <em>over the life of the loan</em>.</p>
 <p>Take <strong>Loan #1234</strong>, for example. This five-year term loan just came into our bank today and passed through our model, which returned the following probability of default curve prediction:</p>
 <div class="cell">
@@ -200,23 +171,16 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <p>In the case of <strong>Loan #1234</strong>, it looks like it has been performing pretty well, since the <em>updated</em> probability of defaulting before term is down from 16.0% to 7.2%.</p>
-<section id="one-model-to-rule-them-all" class="level3">
-<h3 class="anchored" data-anchor-id="one-model-to-rule-them-all">One Model to Rule Them All</h3>
+<section id="one-model-to-rule-them-all" class="level3"><h3 class="anchored" data-anchor-id="one-model-to-rule-them-all">One Model to Rule Them All</h3>
 <p>In our toy example, we used an annual frequency along the x-axis of our charts. In practice, this frequency would be much more granular – at least monthly, and hopefully daily. Remember, the time granularity of our model’s output is tied directly to the frequency of the input data. In other words, if we get new repayment &amp; economic outlook data each <em>month</em>, then (1) our model will output a predicted probability of default for each <em>month</em> into the future, and (2) that prediction curve can be updated each <em>month</em>.</p>
 <blockquote class="blockquote">
 <p>From a practical perspective, having a modeling framework that provides probability of default estimates in <strong>real-time</strong> (including origination) that updates dynamically as we get new information allows us to quickly build automated loan decisioning, scorecard lending, CECL, and stress testing models along the <strong>same</strong> probability of default framework.</p>
 </blockquote>
-</section>
-</section>
-<section id="interested-in-learning-more" class="level2">
-<h2 class="anchored" data-anchor-id="interested-in-learning-more">Interested in Learning More?</h2>
+</section></section><section id="interested-in-learning-more" class="level2"><h2 class="anchored" data-anchor-id="interested-in-learning-more">Interested in Learning More?</h2>
 <p>Get in touch with us today at <a href="mailto:info@ketchbrookanalytics.com">info@ketchbrookanalytics.com</a></p>
 
 
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
     const anchorJS = new window.AnchorJS();
@@ -617,7 +581,6 @@ ul.task-list li input[type="checkbox"] {
   });
   </script>
 </div> <!-- /content -->
-
 
 
 

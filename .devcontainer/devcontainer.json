@@ -15,7 +15,7 @@
 		// Note: httpgd has been archived on CRAN as of 2025-04-23, see
 		// https://cran.r-project.org/web/packages/httpgd/index.html
 		"ghcr.io/rocker-org/devcontainer-features/r-packages:1": {
-			"packages": "dplyr, echarts4r, github::nx10/httpgd, jsonlite, knitr, languageserver, rmarkdown, tibble",
+			"packages": "downlit, dplyr, echarts4r, github::nx10/httpgd, jsonlite, knitr, languageserver, rmarkdown, tibble, xml2",
 			"installSystemRequirements": true
 		}
   },
