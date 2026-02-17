@@ -82,7 +82,7 @@ Our solution to these problems was two-fold. First, we reduced the scope and rep
 
 To solve that last part, we developed a script that uses the column's metadata to change the column names from say “ROI” to “return_on_investment”. This is much more readable for any human (and when working with LLMs, it is a good practice to explain everything as you would a person that has no context, they can't know details of your circumstances otherwise) or LLM, and it also lets them know which column the user is referring to in natural language.
 
-## Challenge 2.2: Aliases
+## Challenge 2a: Aliases
 
 ### Problem
 
@@ -90,7 +90,7 @@ Our solution from above generated another problem. Some users are very knowledge
 
 ### Solution
 
-Add to the prompt's context, known aliases for column names.
+Add the known aliases for column names to the prompt's context.
 
 ## Challenge 3: Accuracy and Performance
 
