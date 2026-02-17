@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Michael Thomas">
+<meta name="dcterms.date" content="2022-02-19">
+<meta name="description" content="Don’t let your model choice shrink your data.">
+
+<title>Making Small Data Big(ger) – Ketchbrook Analytics Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../www/favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dcd6dad1d9027e0fc018a6aab5a8b21b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-9099669265fe583b2fd0ede870bd04aa.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Ketchbrook Analytics Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ketchbrookanalytics"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/company/ketchbrook-analytics"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Making Small Data Big(ger)</h1>
+                  <div>
+        <div class="description">
+          Don’t let your model choice shrink your data.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Michael Thomas </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 19, 2022</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p>One of the caveats of working with your traditional vanilla machine learning algorithms (e.g., linear regression, logistic regression, decision trees, etc.) is that each case (row) in your training dataset <em>must be independent</em>. Let’s explore what exactly this means.</p>
+<p>The way those algorithms learn is by looking at a bunch of cases: the circumstances surrounding each case, and what the outcome was for each case. The algorithm then tries to boil all of these cases down to a handful of rules that do a pretty good job at explaining how certain circumstances generally lead to particular outcomes.</p>
+<section id="applications-in-credit-risk" class="level2">
+<h2 class="anchored" data-anchor-id="applications-in-credit-risk">Applications in Credit Risk</h2>
+<p>When we think about credit risk models, the <em>cases</em> are perhaps a bunch of historical loans in your portfolio where we know what the outcome was. To provide a simplified example, let’s suppose we are building a <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression</a> model where the possible outcomes are <strong>(1)</strong> the loan was paid back in full or, <strong>(2)</strong> the borrower defaulted on the loan.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Loan ID</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Debt Coverage Ratio</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Credit Score</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Industry Outlook</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center; width: 0.75in;">1001</td>
+<td style="text-align: center; width: 1.75in;">1.334</td>
+<td style="text-align: center; width: 1.5in;">711</td>
+<td style="text-align: center; width: 1.5in;">Fair</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: darkgreen !important;">Paid in Full</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center; width: 0.75in;">1002</td>
+<td style="text-align: center; width: 1.75in;">1.163</td>
+<td style="text-align: center; width: 1.5in;">760</td>
+<td style="text-align: center; width: 1.5in;">Poor</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: red !important;">Default</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; width: 0.75in;">1003</td>
+<td style="text-align: center; width: 1.75in;">1.858</td>
+<td style="text-align: center; width: 1.5in;">740</td>
+<td style="text-align: center; width: 1.5in;">Excellent</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: darkgreen !important;">Paid in Full</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center; width: 0.75in;">1004</td>
+<td style="text-align: center; width: 1.75in;">0.767</td>
+<td style="text-align: center; width: 1.5in;">724</td>
+<td style="text-align: center; width: 1.5in;">Poor</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: darkgreen !important;">Paid in Full</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; width: 0.75in;">1005</td>
+<td style="text-align: center; width: 1.75in;">1.346</td>
+<td style="text-align: center; width: 1.5in;">712</td>
+<td style="text-align: center; width: 1.5in;">Above Average</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: red !important;">Default</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center; width: 0.75in;">1006</td>
+<td style="text-align: center; width: 1.75in;">1.966</td>
+<td style="text-align: center; width: 1.5in;">697</td>
+<td style="text-align: center; width: 1.5in;">Excellent</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: darkgreen !important;">Paid in Full</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; width: 0.75in;">1007</td>
+<td style="text-align: center; width: 1.75in;">1.502</td>
+<td style="text-align: center; width: 1.5in;">671</td>
+<td style="text-align: center; width: 1.5in;">Excellent</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: red !important;">Default</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center; width: 0.75in;">1008</td>
+<td style="text-align: center; width: 1.75in;">1.117</td>
+<td style="text-align: center; width: 1.5in;">743</td>
+<td style="text-align: center; width: 1.5in;">Fair</td>
+<td style="text-align: center; width: 1.5in; font-weight: bold;"><span style="     color: darkgreen !important;">Paid in Full</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>In order to create the above dataset to train our model, we had to aggregate each loan into a single observation, so that each row represents a unique loan. Remember, each case in our training data must be independent; for us this means that we cannot have any loan appear more than once. There are many approaches to doing this aggregation which we won’t cover today, but for now just remember that the approach taken should be driven by what information will be available at the time of <em>scoring</em> a new loan.</p>
+<section id="aggregation-is-limiting" class="level3">
+<h3 class="anchored" data-anchor-id="aggregation-is-limiting">Aggregation is Limiting</h3>
+<p>When we take the step of aggregating our data into unique loan-level observations, we are naturally reducing the amount of data we have to work with. If you have tons of data, this isn’t an issue. But one issue we run into often is severe <em>class imbalance</em> in our outcome. In other words, we tend to have a lot more <span style="color: darkgreen;">“Paid in Full”</span> cases than we have <span style="color: red;">“Default”</span> cases.</p>
+<blockquote class="blockquote">
+<p>“Remember, each case in our training data must be independent; for us this means that we cannot have any loan appear more than once.”</p>
+</blockquote>
+<p>But what if we didn’t have to satisfy that independence assumption? What if we didn’t have to aggregate our data? After all, the original data in our database probably looks a lot more like this:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table caption-top table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Loan ID</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Date</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Debt Coverage Ratio</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Credit Score</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Industry Outlook</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1001</td>
+<td style="text-align: center;">2021-06-01</td>
+<td style="text-align: center;">1.925</td>
+<td style="text-align: center;">749</td>
+<td style="text-align: center;">Excellent</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: gray !important;">Current</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1001</td>
+<td style="text-align: center;">2021-07-01</td>
+<td style="text-align: center;">1.674</td>
+<td style="text-align: center;">705</td>
+<td style="text-align: center;">Good</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: gray !important;">Current</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1001</td>
+<td style="text-align: center;">2021-08-01</td>
+<td style="text-align: center;">1.334</td>
+<td style="text-align: center;">711</td>
+<td style="text-align: center;">Fair</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: darkgreen !important;">Paid in Full</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1002</td>
+<td style="text-align: center;">2021-02-01</td>
+<td style="text-align: center;">1.199</td>
+<td style="text-align: center;">764</td>
+<td style="text-align: center;">Good</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: gray !important;">Current</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1002</td>
+<td style="text-align: center;">2021-03-01</td>
+<td style="text-align: center;">1.163</td>
+<td style="text-align: center;">760</td>
+<td style="text-align: center;">Poor</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: red !important;">Default</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1003</td>
+<td style="text-align: center;">2021-09-01</td>
+<td style="text-align: center;">0.644</td>
+<td style="text-align: center;">800</td>
+<td style="text-align: center;">Above Average</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: gray !important;">Current</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1003</td>
+<td style="text-align: center;">2021-10-01</td>
+<td style="text-align: center;">2.654</td>
+<td style="text-align: center;">728</td>
+<td style="text-align: center;">Good</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: gray !important;">Current</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1003</td>
+<td style="text-align: center;">2021-11-01</td>
+<td style="text-align: center;">1.858</td>
+<td style="text-align: center;">740</td>
+<td style="text-align: center;">Excellent</td>
+<td style="text-align: center; font-weight: bold;"><span style="     color: darkgreen !important;">Paid in Full</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This type of data is sometimes referred to as <em>“longitudinal”</em> data, and represents observations of the same subject(s) over multiple points in time. In our case, the <em>“subjects”</em> are the unique loans. Clearly, the rows in this type of dataset are <strong>not</strong> independent, since we see the same loan appear more than once.</p>
+</section>
+<section id="whats-to-be-gained" class="level3">
+<h3 class="anchored" data-anchor-id="whats-to-be-gained">What’s to be Gained</h3>
+<p>Suppose the independence condition didn’t exist, and we <em>could</em> use this longitudinal data to build our logistic regression model. What would we gain by doing so?</p>
+<ul>
+<li><strong>More Data</strong>: For starters, we would have a lot more data! In situations where we don’t have a ton of data to begin with, each row of data we <em>do</em> have is really important. Especially when we have <em>class imbalance</em> in our data – we need as much information about <span style="color: red;">“Default”</span> loans as possible to help our model develop those general rules (and avoid <a href="https://en.wikipedia.org/wiki/Overfitting">overfitting</a>).</li>
+<li><strong>More Signal</strong>: Second, we can give our model insight into a loan’s history in a way that we weren’t able to with our aggregated dataset. For example, it’s probably important to distinguish between a loan that defaulted after being on the books for 3 years versus one that defaulted after 3 months. You can think of this as incorporating an entire additional predictor variable into our model.</li>
+</ul>
+</section>
+</section>
+<section id="enter-multi-level-models" class="level2">
+<h2 class="anchored" data-anchor-id="enter-multi-level-models">Enter: Multi-Level Models</h2>
+<p>Luckily for us data scientists, we know that we have a lot more tools in our toolbox than just the three algorithms mentioned at the beginning of this article. One suite of lesser-known algorithms we might explore are <em>multi-level models</em>.</p>
+<p>If you haven’t heard of multi-level models, you may be familiar with <em>“mixed effects”</em> or <em>“hierarchical”</em> models. These three terms all refer to roughly the same thing. The big advantage of this type of model? <strong>Each case in your training data does not have to be independent</strong>. This means that we can use a dataset that looks a lot more like the second table above, as opposed to the (aggregated) first table.</p>
+<section id="analogous-algorithms" class="level3">
+<h3 class="anchored" data-anchor-id="analogous-algorithms">Analogous Algorithms</h3>
+<p>Fortunately for us, a lot of the more traditional algorithms have <em>multi-level</em> analogs.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="not_so_different.gif" class="img-fluid figure-img"></p>
+<figcaption>Austin Powers Scene, “We’re Not So Different, You and I”</figcaption>
+</figure>
+</div>
+<p>In fact, there are <em>multi-level</em> and <em>mixed effects</em> flavors of logistic regression that allow you to accommodate dependence between rows in your training data.</p>
+<p>In our next blog post, we will dive deeper into the technical approaches to implementing these kinds of algorithms for building better credit risk models.</p>
+</section>
+</section>
+<section id="interested-in-learning-more" class="level2">
+<h2 class="anchored" data-anchor-id="interested-in-learning-more">Interested in Learning More?</h2>
+<p>Get in touch with us today at <a href="mailto:info@ketchbrookanalytics.com">info@ketchbrookanalytics.com</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
