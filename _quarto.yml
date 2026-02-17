@@ -1,7 +1,7 @@
 project:
   type: website
-  
-execute: 
+
+execute:
   freeze: auto
 
 website:
@@ -21,3 +21,5 @@ format:
     code-fold: true
     highlight-style: breeze
     code-link: true
+    toc: true
+    toc-depth: 2

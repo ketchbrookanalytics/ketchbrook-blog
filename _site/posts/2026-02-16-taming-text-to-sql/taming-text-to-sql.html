@@ -77,7 +77,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
@@ -152,7 +152,38 @@ ul.task-list li input[type="checkbox"] {
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#introduction-the-data-accessibility-challenge" id="toc-introduction-the-data-accessibility-challenge" class="nav-link active" data-scroll-target="#introduction-the-data-accessibility-challenge">Introduction: The Data Accessibility Challenge</a></li>
+  <li><a href="#the-spark-why-text-to-sql-why-now" id="toc-the-spark-why-text-to-sql-why-now" class="nav-link" data-scroll-target="#the-spark-why-text-to-sql-why-now">The Spark: Why Text-to-SQL, Why Now?</a></li>
+  <li><a href="#the-expedition-navigating-the-development-landscape" id="toc-the-expedition-navigating-the-development-landscape" class="nav-link" data-scroll-target="#the-expedition-navigating-the-development-landscape">The Expedition: Navigating the Development Landscape</a>
+  <ul class="collapse">
+  <li><a href="#core-architecture" id="toc-core-architecture" class="nav-link" data-scroll-target="#core-architecture">Core Architecture</a></li>
+  <li><a href="#choosing-the-engine" id="toc-choosing-the-engine" class="nav-link" data-scroll-target="#choosing-the-engine">Choosing the Engine</a></li>
+  </ul></li>
+  <li><a href="#overcoming-dragons-challenges-and-solutions" id="toc-overcoming-dragons-challenges-and-solutions" class="nav-link" data-scroll-target="#overcoming-dragons-challenges-and-solutions">Overcoming Dragons: Challenges and Solutions</a>
+  <ul class="collapse">
+  <li><a href="#challenge-1-performance-and-cost" id="toc-challenge-1-performance-and-cost" class="nav-link" data-scroll-target="#challenge-1-performance-and-cost">Challenge 1: Performance and Cost</a></li>
+  <li><a href="#challenge-2-schema-complexity" id="toc-challenge-2-schema-complexity" class="nav-link" data-scroll-target="#challenge-2-schema-complexity">Challenge 2: Schema Complexity</a></li>
+  <li><a href="#challenge-2a-aliases" id="toc-challenge-2a-aliases" class="nav-link" data-scroll-target="#challenge-2a-aliases">Challenge 2a: Aliases</a></li>
+  <li><a href="#challenge-3-accuracy-and-performance" id="toc-challenge-3-accuracy-and-performance" class="nav-link" data-scroll-target="#challenge-3-accuracy-and-performance">Challenge 3: Accuracy and Performance</a></li>
+  <li><a href="#challenge-4-filter-columns" id="toc-challenge-4-filter-columns" class="nav-link" data-scroll-target="#challenge-4-filter-columns">Challenge 4: Filter columns</a></li>
+  <li><a href="#challenge-5-context-window-limitations" id="toc-challenge-5-context-window-limitations" class="nav-link" data-scroll-target="#challenge-5-context-window-limitations">Challenge 5: Context window limitations</a></li>
+  <li><a href="#challenge-6-error-handling" id="toc-challenge-6-error-handling" class="nav-link" data-scroll-target="#challenge-6-error-handling">Challenge 6: Error handling</a></li>
+  </ul></li>
+  <li><a href="#the-summit-our-final-product-key-capabilities" id="toc-the-summit-our-final-product-key-capabilities" class="nav-link" data-scroll-target="#the-summit-our-final-product-key-capabilities">The Summit: Our Final Product &amp; Key Capabilities</a></li>
+  <li><a href="#view-from-the-top-lessons-learned" id="toc-view-from-the-top-lessons-learned" class="nav-link" data-scroll-target="#view-from-the-top-lessons-learned">View from the Top: Lessons Learned</a>
+  <ul class="collapse">
+  <li><a href="#technical-takeaways" id="toc-technical-takeaways" class="nav-link" data-scroll-target="#technical-takeaways">Technical takeaways</a></li>
+  <li><a href="#project-insights" id="toc-project-insights" class="nav-link" data-scroll-target="#project-insights">Project insights</a></li>
+  <li><a href="#the-power-of-llms" id="toc-the-power-of-llms" class="nav-link" data-scroll-target="#the-power-of-llms">The power of LLMs</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content">
 
@@ -223,15 +254,15 @@ ul.task-list li input[type="checkbox"] {
 <p>To solve that last part, we developed a script that uses the column’s metadata to change the column names from say “ROI” to “return_on_investment”. This is much more readable for any human (and when working with LLMs, it is a good practice to explain everything as you would a person that has no context, they can’t know details of your circumstances otherwise) or LLM, and it also lets them know which column the user is referring to in natural language.</p>
 </section>
 </section>
-<section id="challenge-2.2-aliases" class="level2">
-<h2 class="anchored" data-anchor-id="challenge-2.2-aliases">Challenge 2.2: Aliases</h2>
+<section id="challenge-2a-aliases" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-2a-aliases">Challenge 2a: Aliases</h2>
 <section id="problem-1" class="level3">
 <h3 class="anchored" data-anchor-id="problem-1">Problem</h3>
 <p>Our solution from above generated another problem. Some users are very knowledgeable of the domain vocabulary, and it is normal for them to use the acronyms and initialisms in their queries to save time.</p>
 </section>
 <section id="solution-2" class="level3">
 <h3 class="anchored" data-anchor-id="solution-2">Solution</h3>
-<p>Add to the prompt’s context, known aliases for column names.</p>
+<p>Add the known aliases for column names to the prompt’s context.</p>
 </section>
 </section>
 <section id="challenge-3-accuracy-and-performance" class="level2">
