@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Franco Ferrero">
+<meta name="dcterms.date" content="2026-02-16">
+<meta name="description" content="How we leveraged LLMs to bridge the gap between users and data.">
+
+<title>Taming Text-to-SQL – Ketchbrook Analytics Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../www/favicon.ico" rel="icon">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dcd6dad1d9027e0fc018a6aab5a8b21b.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-9099669265fe583b2fd0ede870bd04aa.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Ketchbrook Analytics Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ketchbrookanalytics"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/company/ketchbrook-analytics"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Taming Text-to-SQL</h1>
+                  <div>
+        <div class="description">
+          How we leveraged LLMs to bridge the gap between users and data.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Franco Ferrero </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 16, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<section id="introduction-the-data-accessibility-challenge" class="level1">
+<h1>Introduction: The Data Accessibility Challenge</h1>
+<p>Have you ever wished that you could <em>ask</em> your data questions in plain English?</p>
+<p>At Ketchbrook Analytics, we made this a reality for our clients – and it’s completely changed the way they consume data. In this blog post, we have decided to peel back the curtain on our journey to building this solution, which we are coming up on the 1 year anniversary of launching. We’ll share what worked well, what didn’t, and why the end result has been so successful.</p>
+</section>
+<section id="the-spark-why-text-to-sql-why-now" class="level1">
+<h1>The Spark: Why Text-to-SQL, Why Now?</h1>
+<p>The rush to incorporate AI into existing products is visible everywhere. If you see through some of the marketing hype, however, you’ll realize that not all products or projects make sense for an AI infusion. At Ketchbrook, we pride ourselves on being honest with our clients regarding which use cases can benefit from AI – and which can’t.</p>
+<p>Our Farm Credit Call Report Dashboard was one of those use cases that could leverage AI to provide an even better experience for our users. We set out to build an interface within the dashboard where users could submit plain-English “prompts” (i.e., questions about the Call Report financial data) and receive the data they asked for immediately on-screen.</p>
+</section>
+<section id="the-expedition-navigating-the-development-landscape" class="level1">
+<h1>The Expedition: Navigating the Development Landscape</h1>
+<section id="core-architecture" class="level2">
+<h2 class="anchored" data-anchor-id="core-architecture">Core Architecture</h2>
+<p>Our first step was to research the State of the Art (SOA) in Text-To-SQL and implementation schematics (and we encourage you to do so as well if you plan on following our steps, as SOA is advancing rapidly nowadays). For large databases, many solutions basically tend to go something like this:</p>
+<p><img src="workflows.png" class="img-fluid"></p>
+<p>First, you’ll need to set up a workflow that extracts the source database’s schema (tables, columns, keys, joins, etc.) and as much metadata as possible. We’ve named it “DDL” (Data Definition Language) in our graph above, since most of the output of that process is comprised by DDL statements. The workflow then splits the DDL into smaller chunks and runs those chunks through an embedding model (which turns text into numbers) then saves the embedded result in a <strong>vector database</strong>.</p>
+<p>We can also automate this workflow so that it can continuously run on a set schedule to keep the vector database up to date (i.e., so that user questions are as relevant as possible with respect to changes made to the source database over time).</p>
+<p>The next step is to set up a second workflow that leverages the vector database created in the first workflow. Once the user prompt is received, we must develop a pipeline to retrieve the pertinent DDL that should accompany it as context for the LLM. To do so, we embed the query and use semantic/hybrid search in our vector database to get the information that would help us answer the user’s question (i.e.&nbsp;if the user prompt is “How many employees do we have?”, we’ll likely need information about the “Employee” table in the source database).</p>
+<p>Both the initial user query and the pertinent DDL are then fed to the LLM as a prompt, as well as our request that the LLM return SQL code that can answer the query. The LLM spits out our SQL, we execute it against the source database, fetch the results, and display them to the user.</p>
+<p>Hopefully this initial framework we’ve described helps set the stage, but there are certainly many more questions to answer: Which LLM should I use? Which embedding model? Which Vector DB? Where will I stand all of this up? What are the hardware requirements? The cost? If we are depending on RAG, how consistent will the performance be? And many more questions that you may already be asking yourself.</p>
+</section>
+<section id="choosing-the-engine" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-the-engine">Choosing the Engine</h2>
+<p>When talking about LLMs there are always two clear paths available:</p>
+<ol type="1">
+<li>Use a third-party (OpenAI, Anthropic, Google)</li>
+<li>Self-host with open-source models (Llama, DeepSeek, Gemma)</li>
+</ol>
+<p>The second option (self-hosting your own LLM) gives you total control over cost and privacy. You know exactly what goes in and out, what gets stored and what doesn’t, where that storage is, and what other services/networks you let it communicate with. You can also use it as much as you want without worrying about running out of credits, running up a large bill, or dealing with vendor outages/downtime.</p>
+<p>The downsides to self-hosting include cost and setup complexity. Hosting an LLM typically requires beefy hardware, and that can be expensive – especially if you are running it 24/7. It will also likely increase your latency because the costs of using a big enough server that responds in a second or two seconds instead of five or ten seconds can be prohibitive.</p>
+<p>A second minor downside to self-hosting is that third-party models tend to be the “best of the best”, while self-hosting relies on using open-source models that are slightly behind the latest third-party offerings.</p>
+<p>All mentioned downsides for self-hosting are of course, upsides for the using third-party models. With third-party LLMs, you only pay for what you use (which can be as cheap as $0.01 per prompt/query). They tend to send back quicker responses because they are backed by massive data centers.</p>
+<p>The main drawback for most organizations considering using third-party LLMs is the lack of ensured privacy. While many of the third-party vendors in this space offer paid subscriptions that come with “privacy-ensured” SLAs, most of these same vendors trained their models on copyrighted data (on everything they could get a hold of, really), which has raised significant ethical and legal concerns. Many firms we work with to stand up self-hosted LLM solutions appreciate the certainty that whatever they send to their model will not leave their environment.</p>
+</section>
+</section>
+<section id="overcoming-dragons-challenges-and-solutions" class="level1">
+<h1>Overcoming Dragons: Challenges and Solutions</h1>
+<section id="challenge-1-performance-and-cost" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-1-performance-and-cost">Challenge 1: Performance and Cost</h2>
+<section id="problem" class="level3">
+<h3 class="anchored" data-anchor-id="problem">Problem</h3>
+<p>Of course, the first problem is directly related to what we’ve just been talking about. Third party or self-host?</p>
+</section>
+<section id="solution" class="level3">
+<h3 class="anchored" data-anchor-id="solution">Solution</h3>
+<p>After initially pursuing a self-hosted approach, we quickly switched to a third-party LLM; primarily because the information that we would be exposing to our LLM was publicly available data. Further, it’s important to remember that the information we expose to the LLM was limited to only the <em>schema</em> of the source database; not the data in the database itself (i.e., we only provided metadata). Using a third-party model helped reduce both latency and cost.</p>
+<p>For the specific third-party model, we chose Anthropic’s Claude, as we have consistently found it to be the best LLM for generating accurate SQL code from plain-English prompts. You should do your own research on models (and prices and rate limits) at when choosing one, given that the rankings change almost weekly and it wouldn’t make much sense for me to recommend a specific one.</p>
+</section>
+</section>
+<section id="challenge-2-schema-complexity" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-2-schema-complexity">Challenge 2: Schema Complexity</h2>
+<section id="problems" class="level3">
+<h3 class="anchored" data-anchor-id="problems">Problem(s)</h3>
+<p>In our case, all of the table names and columns were uppercase. This was a database design decision based upon matching the convention used by the FCA in the published data. Anyone who has worked with Postgres as their database engine knows that Postgres is not a fan of uppercase characters. While not catastrophic, this dichotomy reared its ugly head in that all column and table references in our generated SQL query would need to be encased in quotes; should you forget to quote them, Postgres would have a fit. LLMs tend to like fuzzy inputs and fuzzy outputs. They are non-deterministic, and forgetting a quote here and there would not be odd. Plus, they are not trained specifically on Postgres so they might get confused along the way and use a flavor of SQL meant for Oracle or Microsoft, for example</p>
+<p>Another challenge was that both table and column names were acronyms and initialisms. You can’t expect an LLM (or a human really) to know what ACTRTFV means out of the gate without any context. If you read ROI, you might think <em>Return of Investment</em> which is a very common usage, but it might also mean <em>Region of Interest</em> or <em>Radius of Influence</em> (less common, but also used).</p>
+</section>
+<section id="solution-1" class="level3">
+<h3 class="anchored" data-anchor-id="solution-1">Solution</h3>
+<p>Our solution to these problems was two-fold. First, we reduced the scope and replaced all necessary tables with a single view that had what we thought was the most important information for our users. This also greatly affected our initial solution architecture, as we now don’t really need RAG for the DB schema if it will only have a single view. This removed our issues with table names, number of tables and joins, but we still had uppercase column names to deal with.</p>
+<p>To solve that last part, we developed a script that uses the column’s metadata to change the column names from say “ROI” to “return_on_investment”. This is much more readable for any human (and when working with LLMs, it is a good practice to explain everything as you would a person that has no context, they can’t know details of your circumstances otherwise) or LLM, and it also lets them know which column the user is referring to in natural language.</p>
+</section>
+</section>
+<section id="challenge-2.2-aliases" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-2.2-aliases">Challenge 2.2: Aliases</h2>
+<section id="problem-1" class="level3">
+<h3 class="anchored" data-anchor-id="problem-1">Problem</h3>
+<p>Our solution from above generated another problem. Some users are very knowledgeable of the domain vocabulary, and it is normal for them to use the acronyms and initialisms in their queries to save time.</p>
+</section>
+<section id="solution-2" class="level3">
+<h3 class="anchored" data-anchor-id="solution-2">Solution</h3>
+<p>Add to the prompt’s context, known aliases for column names.</p>
+</section>
+</section>
+<section id="challenge-3-accuracy-and-performance" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-3-accuracy-and-performance">Challenge 3: Accuracy and Performance</h2>
+<section id="problem-2" class="level3">
+<h3 class="anchored" data-anchor-id="problem-2">Problem</h3>
+<p>A fair number of tests returned executable SQL that didn’t really answer our query, or misinterpreted it somehow. The performance was good, but not <em>great</em>, and not something that we’d be comfortable shipping to users.</p>
+</section>
+<section id="solution-3" class="level3">
+<h3 class="anchored" data-anchor-id="solution-3">Solution</h3>
+<p>Adding examples to the Prompt’s context window worked wonders on solving this issue. It gave the LLM a better sense of the underlying data, how to correctly interpret the users’ prompts, and what to expect.</p>
+<p>The examples added were of varying SQL difficulty and contained a range of topics, but we tried to limit them somewhat. The objective is to add context but try to avoid the LLM just copying the example as-is; the user might want something similar but not <em>exactly</em> the same as the example we provided.</p>
+<p><strong>Pro Tip</strong>: In a solution incorporating RAG, you’ll likely want to pull examples for the table(s) selected during the vector search. Or inversely, get to the tables through the examples!</p>
+<p>The examples contain a user’s natural language query and a resulting SQL query; they do not contain data.</p>
+</section>
+</section>
+<section id="challenge-4-filter-columns" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-4-filter-columns">Challenge 4: Filter columns</h2>
+<section id="problem-3" class="level3">
+<h3 class="anchored" data-anchor-id="problem-3">Problem</h3>
+<p>You’ll likely have columns that are prime targets for filtering. Some like dates and such don’t need extra work, but something like a specific company name might. Users can mistype (I do it alll the tiem), but the main issue is that they won’t likely type the field value <strong>exactly</strong> as it is saved on the database, especially if they don’t know how it was saved (and they shouldn’t have to!)</p>
+<p>Your SQL query might need “The Grand Fishing Company LLC.” to use as filter, otherwise it won’t work. Users are likely to write “grand fishing” at best.</p>
+</section>
+<section id="solution-4" class="level3">
+<h3 class="anchored" data-anchor-id="solution-4">Solution</h3>
+<p>This is the only instance where we might share some of the underlying data with the LLM. Passing along a list of the available values for this type of field solves this issue to great effect, especially if you instruct the LLM to not deviate of that list. Users get the chance to mistype or partially complete as they like and the LLM will match with the correct one or do a best guess.</p>
+</section>
+</section>
+<section id="challenge-5-context-window-limitations" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-5-context-window-limitations">Challenge 5: Context window limitations</h2>
+<section id="problem-4" class="level3">
+<h3 class="anchored" data-anchor-id="problem-4">Problem</h3>
+<p>Context windows are finite and making them too big tends to result in bad performance. Nowadays most models accept a context window of about 120k tokens, but going over 32k starts making models unreliable with said context (at the time of writing, Google has launched a Gemini version that is supposed to accept 1M tokens as context and be surprisingly good with it, but we haven’t tested it yet) as you may run into the <a href="https://arxiv.org/abs/2307.03172">lost in the middle issue</a>. This means that LLMs tend to pay attention to the beginning and end of the context, but not much to the middle of it.</p>
+<p>There is also the issue of cost. If you are self-hosting your LLM, the cost is represented in latency and consumption of the available memory. Bigger context needs more RAM and so to handle a bigger context you also need beefier hardware, which is more expensive. If using a third party (like Claude), it translates directly into cost as they tend to charge by the number of inputted and outputted tokens.</p>
+</section>
+<section id="solution-5" class="level3">
+<h3 class="anchored" data-anchor-id="solution-5">Solution</h3>
+<p>Our solution to problem 2 greatly impacted this problem as well, as the resulting schema is small. We also spent a good amount of time prompt engineering to make sure we were efficient with our token usage while getting good performance, and we made sure the important parts of our instructions were at the beginning and end of our prompt.</p>
+<p>We also decided to reduce the scope and make our tool translate single instances of queries. What I mean by this is that it will not work like chatting with ChatGPT where you have an interaction and the LLM remembers what you’ve been talking about. We have chat history added to the context, and it is a <em>single-shot</em> process. You input a natural language question; you get SQL and data as a result.</p>
+</section>
+</section>
+<section id="challenge-6-error-handling" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-6-error-handling">Challenge 6: Error handling</h2>
+<section id="problem-5" class="level3">
+<h3 class="anchored" data-anchor-id="problem-5">Problem</h3>
+<p>Even with <a href="https://arxiv.org/abs/2405.00492">temperature</a> set to 0, the LLM might sometimes return an answer with SQL that isn’t executable. It can be a syntax error, a SQL function that is meant for a different database, or some other hallucination it decided to spit out.</p>
+</section>
+<section id="solution-6" class="level3">
+<h3 class="anchored" data-anchor-id="solution-6">Solution</h3>
+<p>First, trying to execute the query against the database generates latency, not only due to connecting to the service and sending the query to the engine, but also because on most instances the query is likely executable, and we need to wait for the engine to gather the result and return it.</p>
+<p>We need a way to check right away if the query can be executed and not waste so much precious time. We decided to generate an empty copy of the database in the same instance as our backend. That way, it is extremely lightweight, and we don’t even ask for an execution, we just ask the engine to “prepare” or “compile” the SQL query. This step involves parsing the query and checking its syntax against the database schema without actually fetching or modifying data.</p>
+<p>Then, if the results are bad, we capture the error and generate a second LLM call that contains some of the original context, the resulting query (the one we wanted to run and failed) and the resulting error, and we add instructions for it to attempt to fix it.</p>
+</section>
+</section>
+</section>
+<section id="the-summit-our-final-product-key-capabilities" class="level1">
+<h1>The Summit: Our Final Product &amp; Key Capabilities</h1>
+<p>Our final solution is the “Chat” feature on our current <a href="https://www.linkedin.com/posts/ketchbrook-analytics_new-ai-chat-feature-call-report-dashboard-activity-7309954314033086464-exCS/">Call Report Dashboard</a>!</p>
+<p><img src="dashboard-demo.gif" class="img-fluid"></p>
+<p>Note that this product is aimed at a specific audience – the Farm Credit System – as it contains financial information specific to that industry (i.e., it is highly adapted to this specific domain of knowledge).</p>
+<p>We’ve added some instructions on a left pane so that non-technical users can get an understanding of how to interact with the tool and know what to expect out of it. It also lets them know what information is being collected as we are firm believers in transparency (we only collect the necessary information to help us improve the product and develop future versions).</p>
+<p>You can now write something like “Show me the Operating Efficiency Ratio for the 10 largest ACAs” and get both the underlying SQL being executed and the resulting data in table format. We add the SQL so that the users may verify (by themselves or with their data/analytics department) that everything makes sense. We believe this is a necessary step to build trust in the tool, particularly if the information is being used to make important decisions.</p>
+<p>It typically takes about <em>2 seconds at most</em> to get the full response! Users also get the option of giving feedback, both by liking/disliking the result, and/or by writing down what the issue was that they encountered and clicking the “Submit Feedback” button.</p>
+</section>
+<section id="view-from-the-top-lessons-learned" class="level1">
+<h1>View from the Top: Lessons Learned</h1>
+<section id="technical-takeaways" class="level2">
+<h2 class="anchored" data-anchor-id="technical-takeaways">Technical takeaways</h2>
+<ul>
+<li>The two main things you need to define are:
+<ul>
+<li>If you’ll self-host the LLM or utilize a third party API,</li>
+<li>How you’ll provide the necessary context for the LLM (mainly a DDL that is good enough for it to generate a good prompt)</li>
+</ul></li>
+<li>After that, keep in mind that:
+<ul>
+<li>Adding examples helps the LLM understand what to expect in its interactions with users, what expected results should look like, and how it should go about interpreting your DDL (just like a human would do)</li>
+<li>Value lists for filter fields are a must. Users shouldn’t have to know the exact wording they need to use for a proper SQL query, and they should be able to mistype or make mistakes occasionally</li>
+</ul></li>
+<li>You need to plan for error recovery. LLMs are good at fuzzy input and fuzzy output, but we need non-fuzzy, structured, syntactically correct output. That means it might get it wrong sometimes and you must handle those situations to maintain an acceptable level of accuracy and performance.</li>
+<li>You’ll need to spend a good amount of time prompt-engineering. Testing and retesting prompts, creating both simple and complicated scenarios to make sure your solution is production ready.</li>
+</ul>
+<p>Here is a short summary of how our prompt is currently structured as mentioned throughout several of the challenges previously described:</p>
+<p><img src="prompt-structure-paths.png" class="img-fluid"></p>
+<p>The first column is the ”happy path” and the other one is the error-recovery path (Base prompts are different, hence the difference in colour)</p>
+<ul>
+<li>Of course, selecting a good underlying LLM that suits your needs is also important, but nowadays many are good enough (they were rarer when we started our journey over a year ago, but they are advancing rapidly)</li>
+</ul>
+</section>
+<section id="project-insights" class="level2">
+<h2 class="anchored" data-anchor-id="project-insights">Project insights</h2>
+<ul>
+<li>Ask for feedback from your users and involve them as soon as possible. Once we had something slightly sketched and partly functional, we gathered some key users and explained how we wanted to tackle this new feature. We showed how it would look, how it would respond, we made wireframes of the UI, we shared examples. They gave us example questions (prompts) that they would want to ask such a tool. We incorporated their valuable feedback into our final solution and it paid off in spades.</li>
+<li>Integrate a mechanism for feedback. User feedback from the usage of your product is most important and it should be easy for the user to give it, and for you to use it. Also, however possible, incentivize your users to actually provide you with feedback – simply making a place for them to provide feedback is often not enough.</li>
+<li>Log and save important data! You need to be able to generate performance metrics and a way to review the process and improve it; you can’t do that without data.</li>
+</ul>
+</section>
+<section id="the-power-of-llms" class="level2">
+<h2 class="anchored" data-anchor-id="the-power-of-llms">The power of LLMs</h2>
+<p>LLMs are constantly getting better, including improved ability to handle a wider range of tasks. Most notable current changes are involving Agents, which give LLMs the power to <em>do</em> stuff more than only respond with text/images/instructions.</p>
+<p>Incorporating LLMs into products and services can generate big rewards and streamline many processes, but not everything should be solved with them. Be conscientious but incorporate them if you can do so in a way that provides value. We believe this is only the beginning!</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
